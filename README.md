@@ -1,0 +1,12 @@
+# Stack:
+ - go + chi v5
+ - svelte (no sveltekit)
+ - tool github.com/swaggo/swag/v2/cmd/swag
+ - tool github.com/go-task/task/v3/cmd/task@latest (nope - use makefile)
+ - tool github.com/air-verse/air
+ - go get -tool github.com/getsops/sops/v3/cmd/sops@latest
+ - air + vite/proxy for live-reload
+ - embed dist + serve
+ - jwt chi + oidc for auth
+ - tolgee for translations
+ - openapi-fetch and https://github.com/tanstack/query (svelte) (maybe)
