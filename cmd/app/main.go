@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/enolgor/lurra/controller"
+	"github.com/enolgor/lurra/web"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -30,7 +31,7 @@ func main() {
 			r.Delete("/{id}", c.DeleteTodo)
 		})
 	})
-	r.Handle("/*", http.FileServer(http.Dir("web/dist")))
+	r.Handle("/*", http.FileServerFS(web.Dist()))
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

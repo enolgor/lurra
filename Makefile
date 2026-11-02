@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup fmt lint test vuln audit security tidy tidy-check bindings bindings-check build dev clean check ci
+.PHONY: help setup fmt lint test vuln audit security tidy tidy-check bindings bindings-check web-build build dev clean check ci
 
 TOOLS_MOD       := tools.mod
 GO_TOOL         := go tool -modfile=$(TOOLS_MOD)
@@ -62,8 +62,11 @@ bindings-check: bindings ## Fail if bindings are out of date
 	@git diff --exit-code -- $(API_SCHEMA_PATH) || (echo "bindings are stale, run 'make bindings'" && exit 1)
 	@echo "bindings-check: ok"
 
-build: ## Compile the binary
-	@go build -ldflags "-X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
+web-build: ## Build the SPA
+	@npm --prefix $(WEB_DIR) run build
+
+build: web-build ## Compile the binary with the SPA embedded
+	@go build -tags embed -ldflags "-X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
 	@echo "build: ok ($(VERSION))"
 
 dev: ## Run API and web in parallel (Ctrl+C stops both)
@@ -75,4 +78,4 @@ clean: ## Remove build artifacts
 
 check: fmt lint test ## Quick local checks
 
-ci: check tidy-check bindings-check ## Deterministic CI checks (security runs separately)
+ci: check tidy-check bindings-check build ## Deterministic CI checks (security runs separately)
