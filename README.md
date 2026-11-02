@@ -1,5 +1,6 @@
 # Stack:
  - [x] go + chi v5
+ - [ ] godotenv + caarlos0/env
  - [ ] svelte (no sveltekit)
  - [x] tool github.com/swaggo/swag/v2/cmd/swag
  - [x] tool github.com/go-task/task/v3/cmd/task@latest (nope - use makefile)
