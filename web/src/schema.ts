@@ -271,4 +271,3 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;
-// stale
