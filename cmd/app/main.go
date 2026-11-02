@@ -9,15 +9,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-//go:generate go tool -modfile=tools.mod swag init --v3.1 --outputTypes yaml
-//go:generate npm --prefix web exec -- openapi-typescript docs/swagger.yaml -o web/src/schema.ts
-
-//	@title			Todo API
-//	@version		1.0
-//	@description	A very simple todo API.
-
-//	@servers.url	http://localhost:8080/api/v1
-
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)

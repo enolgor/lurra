@@ -1,12 +1,15 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup fmt lint test vuln audit security tidy bindings bindings-check build dev clean check ci
+.PHONY: help setup fmt lint test vuln audit security tidy tidy-check bindings bindings-check build dev clean check ci
 
 TOOLS_MOD       := tools.mod
 GO_TOOL         := go tool -modfile=$(TOOLS_MOD)
 WEB_DIR         := web
 API_SCHEMA_PATH := $(WEB_DIR)/src/schema.ts
+API_INFO_PATH   := controller/doc.go
 TMP_DIR         := .tmp
 BIN_DIR         := bin
+BIN_NAME        := app
+CMD_PATH        := ./cmd/$(BIN_NAME)
 VERSION         := $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 
 help: ## Show this help
@@ -40,15 +43,19 @@ audit: ## Check npm dependencies (fails on high/critical)
 
 security: vuln audit ## Check Go and npm dependencies (use 'make -k security' to see both)
 
-tidy: ## Fail if go.mod/go.sum/tools.mod/tools.sum are not tidy
+tidy: ## Tidy go.mod/go.sum and tools.mod/tools.sum
 	@go mod tidy
 	@go mod tidy -modfile=$(TOOLS_MOD)
-	@git diff --exit-code go.mod go.sum $(TOOLS_MOD) tools.sum
 	@echo "tidy: ok"
+
+tidy-check: ## Fail if go.mod/go.sum/tools.mod/tools.sum are not tidy
+	@go mod tidy -diff
+	@go mod tidy -diff -modfile=$(TOOLS_MOD)
+	@echo "tidy-check: ok"
 
 bindings: ## Generate API bindings
 	@trap 'rm -rf $(TMP_DIR)' EXIT; \
-	$(GO_TOOL) swag init --v3.1 --outputTypes yaml -o $(TMP_DIR) && \
+	$(GO_TOOL) swag init --v3.1 --outputTypes yaml -g $(API_INFO_PATH) -o $(TMP_DIR) && \
 	npx --prefix $(WEB_DIR) --no-install openapi-typescript $(TMP_DIR)/swagger.yaml -o $(API_SCHEMA_PATH)
 
 bindings-check: bindings ## Fail if bindings are out of date
@@ -56,11 +63,11 @@ bindings-check: bindings ## Fail if bindings are out of date
 	@echo "bindings-check: ok"
 
 build: ## Compile the binary
-	@go build -ldflags "-X main.version=$(VERSION)" -o $(BIN_DIR)/app ./cmd/app
+	@go build -ldflags "-X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
 	@echo "build: ok ($(VERSION))"
 
 dev: ## Run API and web in parallel (Ctrl+C stops both)
-	@trap 'kill 0' INT TERM; go run ./cmd/app & npm --prefix $(WEB_DIR) run dev & wait
+	@trap 'kill 0' INT TERM; go run $(CMD_PATH) & npm --prefix $(WEB_DIR) run dev & wait
 
 clean: ## Remove build artifacts
 	@rm -rf $(BIN_DIR) $(TMP_DIR)
@@ -68,4 +75,4 @@ clean: ## Remove build artifacts
 
 check: fmt lint test ## Quick local checks
 
-ci: check tidy bindings-check ## Deterministic CI checks (security runs separately)
+ci: check tidy-check bindings-check ## Deterministic CI checks (security runs separately)
