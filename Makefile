@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup fmt lint test vuln audit security tidy tidy-check bindings bindings-check web-build build dev dev-api dev-web clean check ci
+MAKEFLAGS += --no-print-directory
+.PHONY: help setup _fmt-check _lint test _vuln _audit security tidy _tidy-check _openapi bindings _bindings-check build dev _dev-api _dev-web clean check ci
 
 TOOLS_MOD       := tools.mod
 GO_TOOL         := go tool -modfile=$(TOOLS_MOD)
@@ -22,66 +23,68 @@ setup: ## Download deps and compile dev tools
 	@npm --prefix $(WEB_DIR) ci --silent --no-audit --no-fund
 	@echo "setup: ok"
 
-fmt: ## Check formatting
+_fmt-check: # Fail if Go code is not formatted
 	@test -z "$$(gofmt -l .)" || (gofmt -l . && exit 1)
-	@echo "fmt: ok"
+	@echo "fmt-check: ok"
 
-lint: ## Run linters (includes go vet)
+_lint: # Run linters (includes go vet)
 	@$(GO_TOOL) golangci-lint run
 	@echo "lint: ok"
 
 test: ## Run tests with race detector
 	@go test -race -shuffle=on -cover ./...
 
-vuln: ## Check Go dependencies for known vulnerabilities
+_vuln: # Check Go dependencies for known vulnerabilities
 	@$(GO_TOOL) govulncheck ./...
 	@echo "vuln: ok"
 
-audit: ## Check npm dependencies (fails on high/critical)
+_audit: # Check npm dependencies (fails on high/critical)
 	@npm --prefix $(WEB_DIR) audit --audit-level=high
 	@echo "audit: ok"
 
-security: vuln audit ## Check Go and npm dependencies (use 'make -k security' to see both)
+security: ## Check Go and npm dependencies
+	@$(MAKE) -k _vuln _audit
 
 tidy: ## Tidy go.mod/go.sum and tools.mod/tools.sum
 	@go mod tidy
 	@go mod tidy -modfile=$(TOOLS_MOD)
 	@echo "tidy: ok"
 
-tidy-check: ## Fail if go.mod/go.sum/tools.mod/tools.sum are not tidy
+_tidy-check: # Fail if go.mod/go.sum/tools.mod/tools.sum are not tidy
 	@go mod tidy -diff
 	@go mod tidy -diff -modfile=$(TOOLS_MOD)
 	@echo "tidy-check: ok"
 
-bindings: ## Generate API bindings
-	@trap 'rm -rf $(TMP_DIR)' EXIT; \
-	$(GO_TOOL) swag init --v3.1 --outputTypes yaml -g $(API_INFO_PATH) -o $(TMP_DIR) && \
-	npx --prefix $(WEB_DIR) --no-install openapi-typescript $(TMP_DIR)/swagger.yaml -o $(API_SCHEMA_PATH)
+_openapi: # Generate the OpenAPI spec
+	@$(GO_TOOL) swag init --v3.1 --outputTypes yaml -g $(API_INFO_PATH) -o $(TMP_DIR) --quiet
 
-bindings-check: bindings ## Fail if bindings are out of date
-	@git diff --exit-code -- $(API_SCHEMA_PATH) || (echo "bindings are stale, run 'make bindings'" && exit 1)
+bindings: _openapi ## Generate API bindings
+	@npx --prefix $(WEB_DIR) --no-install openapi-typescript $(TMP_DIR)/swagger.yaml -o $(API_SCHEMA_PATH)
+
+_bindings-check: _openapi # Fail if bindings are out of date
+	@npx --prefix $(WEB_DIR) --no-install openapi-typescript $(TMP_DIR)/swagger.yaml -o $(TMP_DIR)/schema.ts
+	@diff -u $(API_SCHEMA_PATH) $(TMP_DIR)/schema.ts || (echo "bindings are stale, run 'make bindings'" && exit 1)
 	@echo "bindings-check: ok"
 
-web-build: ## Build the SPA
+build: ## Compile the binary with the SPA embedded
 	@npm --prefix $(WEB_DIR) run build
-
-build: web-build ## Compile the binary with the SPA embedded
-	@go build -tags embed -ldflags "-X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
+	@CGO_ENABLED=0 go build -trimpath -tags embed -ldflags "-s -w -X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
 	@echo "build: ok ($(VERSION))"
 
 dev: ## Run air and vite with live reload
-	@$(MAKE) -j2 dev-api dev-web
+	@$(MAKE) -j2 _dev-api _dev-web
 
-dev-api:
+_dev-api:
 	@$(GO_TOOL) air
 
-dev-web:
+_dev-web:
 	@npm --prefix $(WEB_DIR) run dev
 
 clean: ## Remove build artifacts
-	@rm -rf $(BIN_DIR) $(TMP_DIR)
+	@rm -rf $(BIN_DIR) $(TMP_DIR) $(WEB_DIR)/dist
 	@echo "clean: ok"
 
-check: fmt lint test ## Quick local checks
+check: ## Static checks (no tests)
+	@$(MAKE) -k _fmt-check _tidy-check _bindings-check _lint
 
-ci: check tidy-check bindings-check build ## Deterministic CI checks (security runs separately)
+ci: check test build ## Deterministic CI checks (security runs separately)
