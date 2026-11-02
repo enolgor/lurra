@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/enolgor/lurra/httputil"
-	"github.com/enolgor/lurra/model"
+	"github.com/enolgor/lurra/internal/httputil"
+	"github.com/enolgor/lurra/internal/model"
 	"github.com/go-chi/chi/v5"
 )
 

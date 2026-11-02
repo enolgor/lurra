@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/enolgor/lurra/controller"
+	"github.com/enolgor/lurra/internal/controller"
 	"github.com/enolgor/lurra/web"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"

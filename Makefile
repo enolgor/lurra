@@ -6,7 +6,7 @@ TOOLS_MOD       := tools.mod
 GO_TOOL         := go tool -modfile=$(TOOLS_MOD)
 WEB_DIR         := web
 API_SCHEMA_PATH := $(WEB_DIR)/src/schema.ts
-API_INFO_PATH   := controller/doc.go
+API_INFO_PATH   := internal/controller/doc.go
 TMP_DIR         := .tmp
 BIN_DIR         := bin
 BIN_NAME        := app
