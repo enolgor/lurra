@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup fmt lint test vuln audit security tidy tidy-check bindings bindings-check web-build build dev clean check ci
+.PHONY: help setup fmt lint test vuln audit security tidy tidy-check bindings bindings-check web-build build dev dev-api dev-web clean check ci
 
 TOOLS_MOD       := tools.mod
 GO_TOOL         := go tool -modfile=$(TOOLS_MOD)
@@ -69,8 +69,14 @@ build: web-build ## Compile the binary with the SPA embedded
 	@go build -tags embed -ldflags "-X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
 	@echo "build: ok ($(VERSION))"
 
-dev: ## Run API and web in parallel (Ctrl+C stops both)
-	@trap 'kill 0' INT TERM; go run $(CMD_PATH) & npm --prefix $(WEB_DIR) run dev & wait
+dev: ## Run air and vite with live reload
+	@$(MAKE) -j2 dev-api dev-web
+
+dev-api:
+	@$(GO_TOOL) air
+
+dev-web:
+	@npm --prefix $(WEB_DIR) run dev
 
 clean: ## Remove build artifacts
 	@rm -rf $(BIN_DIR) $(TMP_DIR)
