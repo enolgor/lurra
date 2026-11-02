@@ -9,7 +9,12 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// version is set at build time via -ldflags
+var version = "dev"
+
 func main() {
+	log.Printf("version %s", version)
+
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
