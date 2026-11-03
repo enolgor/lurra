@@ -1,37 +1,35 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"fmt"
+	"log/slog"
+	"os"
 
+	"github.com/enolgor/lurra/internal/config"
 	"github.com/enolgor/lurra/internal/controller"
-	"github.com/enolgor/lurra/web"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/enolgor/lurra/internal/logging"
+	"github.com/enolgor/lurra/internal/server"
 )
 
 // version is set at build time via -ldflags
 var version = "dev"
 
 func main() {
-	log.Printf("version %s", version)
+	cfg, err := config.Load()
+	if err != nil {
+		slog.Error("loading config", "error", err)
+		os.Exit(1)
+	}
 
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
+	logger := logging.New(cfg.LogLevel)
+	slog.SetDefault(logger)
+
+	slog.Info("starting", "version", version)
 
 	c := controller.NewController()
 
-	r.Route("/api/v1", func(r chi.Router) {
-		r.Route("/todos", func(r chi.Router) {
-			r.Get("/", c.ListTodos)
-			r.Post("/", c.AddTodo)
-			r.Get("/{id}", c.ShowTodo)
-			r.Patch("/{id}", c.UpdateTodo)
-			r.Delete("/{id}", c.DeleteTodo)
-		})
-	})
-	r.Handle("/*", http.FileServerFS(web.Dist()))
-
-	log.Fatal(http.ListenAndServe(":8080", r))
+	if err := server.Run(fmt.Sprintf(":%d", cfg.Port), server.NewRouter(logger, c)); err != nil {
+		slog.Error("server stopped", "error", err)
+		os.Exit(1)
+	}
 }

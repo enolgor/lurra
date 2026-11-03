@@ -1,13 +1,12 @@
-# Stack:
- - [x] go + chi v5
- - [ ] godotenv + caarlos0/env
- - [ ] svelte (no sveltekit)
- - [x] tool github.com/swaggo/swag/v2/cmd/swag
- - [x] tool github.com/go-task/task/v3/cmd/task@latest (nope - use makefile)
- - [x] tool github.com/air-verse/air
- - [ ] go get -tool github.com/getsops/sops/v3/cmd/sops@latest
- - [x] air + vite/proxy for live-reload (vite proxy done, air pending)
- - [x] embed dist + serve (serving from disk, embed pending)
- - [ ] jwt chi + oidc for auth
- - [ ] tolgee for translations
- - [ ] openapi-fetch and https://github.com/tanstack/query (svelte) (maybe) (openapi-fetch done, query pending)
+# lurra
+
+## Before deploying
+
+- **Log the client IP.** Add the chi `ClientIPFrom*` middleware that matches your deployment
+  (see [Client IP](https://go-chi.io/#/pages/client_ip)), before the request logger:
+  - exposed directly: `middleware.ClientIPFromRemoteAddr`
+  - behind nginx, Cloudflare, etc.: `middleware.ClientIPFromHeader("X-Real-IP", <proxy CIDRs>)`
+  - behind N load balancers: `middleware.ClientIPFromXFFTrustedProxies(n)`
+
+  httplog's concise schema drops the IP, so also add a middleware after the logger that calls
+  `httplog.SetAttrs(ctx, slog.String("client.ip", middleware.GetClientIP(ctx)))`.

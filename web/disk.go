@@ -4,7 +4,7 @@ package web
 
 import (
 	"io/fs"
-	"log"
+	"log/slog"
 	"os"
 )
 
@@ -13,9 +13,9 @@ const distDir = "web/dist"
 // Dist returns the built SPA from disk, relative to the working directory
 func Dist() fs.FS {
 	if _, err := os.Stat(distDir); err != nil {
-		log.Printf("warning: SPA not found in %s, UI will return 404", distDir)
+		slog.Warn("SPA not found, UI will return 404", "dir", distDir)
 	} else {
-		log.Printf("serving SPA from disk: %s", distDir)
+		slog.Info("serving SPA from disk", "dir", distDir)
 	}
 	return os.DirFS(distDir)
 }

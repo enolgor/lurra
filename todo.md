@@ -16,4 +16,18 @@
 - Run `make bindings` after changing the API. `schema.ts` does not update during `make dev`.
 - Format by hand with `gofmt -w .`. `go fmt ./...` skips `web/embed.go` because of its build tag.
 - Only `make build` embeds the UI. A plain `go build` reads `web/dist` from disk.
-- `make check` and `make ci` fail until the intentional lint error is removed.
+
+## Stack
+
+ - [x] go + chi v5
+ - [ ] godotenv + caarlos0/env
+ - [ ] svelte (no sveltekit)
+ - [x] tool github.com/swaggo/swag/v2/cmd/swag
+ - [x] tool github.com/go-task/task/v3/cmd/task@latest (nope - use makefile)
+ - [x] tool github.com/air-verse/air
+ - [ ] go get -tool github.com/getsops/sops/v3/cmd/sops@latest
+ - [x] air + vite/proxy for live-reload (vite proxy done, air pending)
+ - [x] embed dist + serve (serving from disk, embed pending)
+ - [ ] jwt chi + oidc for auth
+ - [ ] tolgee for translations
+ - [ ] openapi-fetch and https://github.com/tanstack/query (svelte) (maybe) (openapi-fetch done, query pending)

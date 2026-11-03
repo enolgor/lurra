@@ -1,7 +1,18 @@
 .claude
 .git
 .github
+.idea
 .tmp
+.vscode
 bin
 web/dist
 web/node_modules
+
+# secrets must never end up in the image
+.env
+.env.*
+
+# test and log output
+*.out
+*.log
+coverage.*

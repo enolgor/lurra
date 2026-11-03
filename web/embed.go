@@ -5,7 +5,7 @@ package web
 import (
 	"embed"
 	"io/fs"
-	"log"
+	"log/slog"
 )
 
 //go:embed all:dist
@@ -17,6 +17,6 @@ func Dist() fs.FS {
 	if err != nil {
 		panic(err)
 	}
-	log.Print("serving SPA from embedded files")
+	slog.Info("serving SPA from embedded files")
 	return dist
 }

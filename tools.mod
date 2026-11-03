@@ -9,7 +9,12 @@ tool (
 	golang.org/x/vuln/cmd/govulncheck
 )
 
-require github.com/go-chi/chi/v5 v5.5.0
+require (
+	github.com/caarlos0/env/v11 v11.4.2
+	github.com/go-chi/chi/v5 v5.5.0
+	github.com/go-chi/httplog/v3 v3.5.0
+	github.com/joho/godotenv v1.5.1
+)
 
 require (
 	4d63.com/gocheckcompilerdirectives v1.4.0 // indirect
@@ -132,7 +137,6 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jgautheron/goconst v1.11.0 // indirect
 	github.com/jjti/go-spancheck v0.6.5 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/julz/importas v0.2.0 // indirect
 	github.com/karamaru-alpha/copyloopvar v1.2.2 // indirect

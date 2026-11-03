@@ -15,9 +15,10 @@ ARG VERSION=dev
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
-COPY cmd cmd
-COPY internal internal
-COPY web/*.go web/
+# Copy everything so new directories work without editing this file; .dockerignore decides what's excluded.
+# Alternative: copy only what the build needs (e.g. COPY cmd cmd, COPY internal internal, COPY web/*.go web/),
+# which documents the image contents and avoids rebuilds on unrelated edits, but must be updated for new dirs.
+COPY . .
 COPY --from=web /src/web/dist web/dist
 # For CGO, set CGO_ENABLED=1 and switch the runtime to base-nossl below.
 RUN CGO_ENABLED=0 go build -trimpath -tags embed -ldflags "-s -w -X main.version=${VERSION}" -o /app ./cmd/app
