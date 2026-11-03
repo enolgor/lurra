@@ -14,8 +14,8 @@ type Todo struct {
 	Done  bool   `json:"done" example:"false" validate:"required"`
 }
 
-// example
 var (
+	ErrNotFound     = errors.New("not found")
 	ErrTitleInvalid = errors.New("title is empty")
 )
 
@@ -107,7 +107,7 @@ func Delete(id int) error {
 }
 
 func notFound(id int) error {
-	return fmt.Errorf("todo id=%d is not found", id)
+	return fmt.Errorf("todo id=%d is %w", id, ErrNotFound)
 }
 
 var mu sync.Mutex

@@ -39,6 +39,7 @@ func main() {
 	c := controller.NewController()
 
 	srv := server.New(cfg.Port, logger, c)
+	slog.Info("listening", "addr", srv.Addr)
 	errCh := make(chan error, 1)
 	go func() { errCh <- srv.ListenAndServe() }()
 

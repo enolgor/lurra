@@ -2,11 +2,9 @@ package controller
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/enolgor/lurra/internal/httputil"
 	"github.com/enolgor/lurra/internal/model"
-	"github.com/go-chi/chi/v5"
 )
 
 // ListTodos godoc
@@ -15,7 +13,8 @@ import (
 //	@Description	get all todos
 //	@Tags			todos
 //	@Produce		json
-//	@Success		200	{array}	model.Todo
+//	@Success		200	{array}		model.Todo
+//	@Failure		500	{object}	httputil.HTTPError
 //	@Router			/todos [get]
 func (c *Controller) ListTodos(w http.ResponseWriter, r *http.Request) {
 	httputil.JSON(w, r, http.StatusOK, model.TodosAll())
@@ -31,16 +30,17 @@ func (c *Controller) ListTodos(w http.ResponseWriter, r *http.Request) {
 //	@Success		200	{object}	model.Todo
 //	@Failure		400	{object}	httputil.HTTPError
 //	@Failure		404	{object}	httputil.HTTPError
+//	@Failure		500	{object}	httputil.HTTPError
 //	@Router			/todos/{id} [get]
 func (c *Controller) ShowTodo(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id, err := pathID(r)
 	if err != nil {
-		httputil.NewError(w, r, http.StatusBadRequest, err)
+		writeError(w, r, err)
 		return
 	}
 	todo, err := model.TodoOne(id)
 	if err != nil {
-		httputil.NewError(w, r, http.StatusNotFound, err)
+		writeError(w, r, err)
 		return
 	}
 	httputil.JSON(w, r, http.StatusOK, todo)
@@ -56,15 +56,17 @@ func (c *Controller) ShowTodo(w http.ResponseWriter, r *http.Request) {
 //	@Param			todo	body		model.AddTodo	true	"Add todo"
 //	@Success		201		{object}	model.Todo
 //	@Failure		400		{object}	httputil.HTTPError
+//	@Failure		413		{object}	httputil.HTTPError
+//	@Failure		500		{object}	httputil.HTTPError
 //	@Router			/todos [post]
 func (c *Controller) AddTodo(w http.ResponseWriter, r *http.Request) {
 	var addTodo model.AddTodo
 	if err := httputil.Decode(r, &addTodo); err != nil {
-		httputil.NewError(w, r, http.StatusBadRequest, err)
+		writeError(w, r, err)
 		return
 	}
 	if err := addTodo.Validation(); err != nil {
-		httputil.NewError(w, r, http.StatusBadRequest, err)
+		writeError(w, r, err)
 		return
 	}
 	httputil.JSON(w, r, http.StatusCreated, model.Insert(addTodo.Title))
@@ -82,25 +84,27 @@ func (c *Controller) AddTodo(w http.ResponseWriter, r *http.Request) {
 //	@Success		200		{object}	model.Todo
 //	@Failure		400		{object}	httputil.HTTPError
 //	@Failure		404		{object}	httputil.HTTPError
+//	@Failure		413		{object}	httputil.HTTPError
+//	@Failure		500		{object}	httputil.HTTPError
 //	@Router			/todos/{id} [patch]
 func (c *Controller) UpdateTodo(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id, err := pathID(r)
 	if err != nil {
-		httputil.NewError(w, r, http.StatusBadRequest, err)
+		writeError(w, r, err)
 		return
 	}
 	var updateTodo model.UpdateTodo
 	if err := httputil.Decode(r, &updateTodo); err != nil {
-		httputil.NewError(w, r, http.StatusBadRequest, err)
+		writeError(w, r, err)
 		return
 	}
 	if err := updateTodo.Validation(); err != nil {
-		httputil.NewError(w, r, http.StatusBadRequest, err)
+		writeError(w, r, err)
 		return
 	}
 	todo, err := model.Update(id, updateTodo)
 	if err != nil {
-		httputil.NewError(w, r, http.StatusNotFound, err)
+		writeError(w, r, err)
 		return
 	}
 	httputil.JSON(w, r, http.StatusOK, todo)
@@ -116,15 +120,16 @@ func (c *Controller) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 //	@Success		204
 //	@Failure		400	{object}	httputil.HTTPError
 //	@Failure		404	{object}	httputil.HTTPError
+//	@Failure		500	{object}	httputil.HTTPError
 //	@Router			/todos/{id} [delete]
 func (c *Controller) DeleteTodo(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id, err := pathID(r)
 	if err != nil {
-		httputil.NewError(w, r, http.StatusBadRequest, err)
+		writeError(w, r, err)
 		return
 	}
 	if err := model.Delete(id); err != nil {
-		httputil.NewError(w, r, http.StatusNotFound, err)
+		writeError(w, r, err)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)

@@ -18,10 +18,10 @@
 - [ ] **Replace the global model with a `model.Store`.** Create it in `main` and pass it with
       `controller.New(store)`, so handler tests don't share state. Do it before the handler test.
       Its methods take `ctx context.Context` first, so their logs include the request ID.
-- [ ] **Add a sentinel `model.ErrNotFound`.** Controllers map every model error to 404; use
+- [x] **Add a sentinel `model.ErrNotFound`.** Controllers map every model error to 404; use
       `errors.Is` and return 500 for anything else.
 - [ ] **Rewrite the swag-example doc comments** (`// Controller example`, `// TodosAll example`, ...).
-- [ ] **Return 413 for oversized bodies.** `RequestSize` makes `Decode` fail with
+- [x] **Return 413 for oversized bodies.** `RequestSize` makes `Decode` fail with
       `*http.MaxBytesError`, which currently returns 400.
 - [ ] **Add an index.html fallback for the SPA** once the Svelte version has client-side routes.
 - [x] **Reject unknown fields** when decoding JSON (`json.RejectUnknownMembers` in `httputil.Decode`).
@@ -38,11 +38,12 @@
 ## Stack
 
  - [x] go + chi v5
- - [ ] godotenv + caarlos0/env
+ - [x] godotenv + caarlos0/env
  - [ ] svelte (no sveltekit)
  - [x] tool github.com/swaggo/swag/v2/cmd/swag
  - [x] tool github.com/go-task/task/v3/cmd/task@latest (nope - use makefile)
  - [x] tool github.com/air-verse/air
+ - [ ] sqlite
  - [ ] go get -tool github.com/getsops/sops/v3/cmd/sops@latest
  - [x] air + vite/proxy for live-reload (vite proxy done, air pending)
  - [x] embed dist + serve (serving from disk, embed pending)
