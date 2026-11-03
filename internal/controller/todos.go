@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -19,7 +18,7 @@ import (
 //	@Success		200	{array}	model.Todo
 //	@Router			/todos [get]
 func (c *Controller) ListTodos(w http.ResponseWriter, r *http.Request) {
-	httputil.JSON(w, http.StatusOK, model.TodosAll())
+	httputil.JSON(w, r, http.StatusOK, model.TodosAll())
 }
 
 // ShowTodo godoc
@@ -36,15 +35,15 @@ func (c *Controller) ListTodos(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) ShowTodo(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		httputil.NewError(w, http.StatusBadRequest, err)
+		httputil.NewError(w, r, http.StatusBadRequest, err)
 		return
 	}
 	todo, err := model.TodoOne(id)
 	if err != nil {
-		httputil.NewError(w, http.StatusNotFound, err)
+		httputil.NewError(w, r, http.StatusNotFound, err)
 		return
 	}
-	httputil.JSON(w, http.StatusOK, todo)
+	httputil.JSON(w, r, http.StatusOK, todo)
 }
 
 // AddTodo godoc
@@ -60,15 +59,15 @@ func (c *Controller) ShowTodo(w http.ResponseWriter, r *http.Request) {
 //	@Router			/todos [post]
 func (c *Controller) AddTodo(w http.ResponseWriter, r *http.Request) {
 	var addTodo model.AddTodo
-	if err := json.NewDecoder(r.Body).Decode(&addTodo); err != nil {
-		httputil.NewError(w, http.StatusBadRequest, err)
+	if err := httputil.Decode(r, &addTodo); err != nil {
+		httputil.NewError(w, r, http.StatusBadRequest, err)
 		return
 	}
 	if err := addTodo.Validation(); err != nil {
-		httputil.NewError(w, http.StatusBadRequest, err)
+		httputil.NewError(w, r, http.StatusBadRequest, err)
 		return
 	}
-	httputil.JSON(w, http.StatusCreated, model.Insert(addTodo.Title))
+	httputil.JSON(w, r, http.StatusCreated, model.Insert(addTodo.Title))
 }
 
 // UpdateTodo godoc
@@ -87,24 +86,24 @@ func (c *Controller) AddTodo(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		httputil.NewError(w, http.StatusBadRequest, err)
+		httputil.NewError(w, r, http.StatusBadRequest, err)
 		return
 	}
 	var updateTodo model.UpdateTodo
-	if err := json.NewDecoder(r.Body).Decode(&updateTodo); err != nil {
-		httputil.NewError(w, http.StatusBadRequest, err)
+	if err := httputil.Decode(r, &updateTodo); err != nil {
+		httputil.NewError(w, r, http.StatusBadRequest, err)
 		return
 	}
 	if err := updateTodo.Validation(); err != nil {
-		httputil.NewError(w, http.StatusBadRequest, err)
+		httputil.NewError(w, r, http.StatusBadRequest, err)
 		return
 	}
 	todo, err := model.Update(id, updateTodo)
 	if err != nil {
-		httputil.NewError(w, http.StatusNotFound, err)
+		httputil.NewError(w, r, http.StatusNotFound, err)
 		return
 	}
-	httputil.JSON(w, http.StatusOK, todo)
+	httputil.JSON(w, r, http.StatusOK, todo)
 }
 
 // DeleteTodo godoc
@@ -121,11 +120,11 @@ func (c *Controller) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		httputil.NewError(w, http.StatusBadRequest, err)
+		httputil.NewError(w, r, http.StatusBadRequest, err)
 		return
 	}
 	if err := model.Delete(id); err != nil {
-		httputil.NewError(w, http.StatusNotFound, err)
+		httputil.NewError(w, r, http.StatusNotFound, err)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)

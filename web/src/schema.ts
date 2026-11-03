@@ -240,6 +240,8 @@ export interface components {
             code: number;
             /** @example status bad request */
             message: string;
+            /** @example host/abc123-000001 */
+            request_id?: string;
         };
         "model.AddTodo": {
             /** @example buy milk */

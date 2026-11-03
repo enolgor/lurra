@@ -10,6 +10,24 @@
 - [ ] **Add a handler test** as a pattern to copy. `make test` has nothing to run yet.
 - [ ] **Pin Node** with `devEngines.runtime` in `web/package.json`, using `"onFail": "error"`.
       Renovate then picks it up, so check its first Node PR stays on LTS.
+- [ ] **Enable graceful shutdown in air** when SQLite arrives: `send_interrupt = true` and
+      `kill_delay = "1s"` under `[build]` in `.air.toml`, so `make dev` exercises the shutdown path.
+
+## Code review
+
+- [ ] **Replace the global model with a `model.Store`.** Create it in `main` and pass it with
+      `controller.New(store)`, so handler tests don't share state. Do it before the handler test.
+      Its methods take `ctx context.Context` first, so their logs include the request ID.
+- [ ] **Add a sentinel `model.ErrNotFound`.** Controllers map every model error to 404; use
+      `errors.Is` and return 500 for anything else.
+- [ ] **Rewrite the swag-example doc comments** (`// Controller example`, `// TodosAll example`, ...).
+- [ ] **Return 413 for oversized bodies.** `RequestSize` makes `Decode` fail with
+      `*http.MaxBytesError`, which currently returns 400.
+- [ ] **Add an index.html fallback for the SPA** once the Svelte version has client-side routes.
+- [x] **Reject unknown fields** when decoding JSON (`json.RejectUnknownMembers` in `httputil.Decode`).
+- [x] **Add graceful shutdown** with `signal.NotifyContext` and `srv.Shutdown`, treating
+      `http.ErrServerClosed` as a normal exit.
+- [x] **Log with the request context in `httputil.JSON`** so its errors include the request ID.
 
 ## Good to know
 

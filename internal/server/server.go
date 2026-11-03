@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -22,8 +23,8 @@ const (
 	idleTimeout       = 120 * time.Second
 )
 
-// NewRouter returns the HTTP handler with the middleware stack, the API and the SPA.
-func NewRouter(logger *slog.Logger, c *controller.Controller) http.Handler {
+// newRouter returns the HTTP handler with the middleware stack, the API and the SPA.
+func newRouter(logger *slog.Logger, c *controller.Controller) http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Heartbeat("/ping")) // before the logger, so health checks are not logged
 	r.Use(middleware.RequestID)
@@ -51,15 +52,14 @@ func NewRouter(logger *slog.Logger, c *controller.Controller) http.Handler {
 	return r
 }
 
-// Run serves h on addr until the server fails.
-func Run(addr string, h http.Handler) error {
-	srv := &http.Server{
-		Addr:              addr,
-		Handler:           h,
+// New returns the HTTP server on port, with the router and timeouts set.
+func New(port int, logger *slog.Logger, c *controller.Controller) *http.Server {
+	return &http.Server{
+		Addr:              fmt.Sprintf(":%d", port),
+		Handler:           newRouter(logger, c),
 		ReadHeaderTimeout: readHeaderTimeout,
 		ReadTimeout:       readTimeout,
 		WriteTimeout:      writeTimeout,
 		IdleTimeout:       idleTimeout,
 	}
-	return srv.ListenAndServe()
 }
