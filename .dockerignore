@@ -1,0 +1,7 @@
+.claude
+.git
+.github
+.tmp
+bin
+web/dist
+web/node_modules

@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 MAKEFLAGS += --no-print-directory
-.PHONY: help setup _fmt-check _lint test _vuln _audit security tidy _tidy-check _openapi bindings _bindings-check build dev _dev-api _dev-web clean check ci
+.PHONY: help setup _fmt-check _lint test _vuln _audit security tidy _tidy-check _openapi bindings _bindings-check build docker dev _dev-api _dev-web clean check ci
 
 TOOLS_MOD       := tools.mod
 GO_TOOL         := go tool -modfile=$(TOOLS_MOD)
@@ -11,7 +11,10 @@ TMP_DIR         := .tmp
 BIN_DIR         := bin
 BIN_NAME        := app
 CMD_PATH        := ./cmd/$(BIN_NAME)
+IMAGE_NAME      := $(BIN_NAME)
 VERSION         := $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
+GO_VERSION      := $(shell sed -n 's/^go //p' go.mod)
+NODE_VERSION    := $(shell sed -n '/"runtime"/,/}/s/.*"version": "[^0-9]*\([0-9]*\).*/\1/p' $(WEB_DIR)/package.json)
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -70,6 +73,9 @@ build: ## Compile the binary with the SPA embedded
 	@npm --prefix $(WEB_DIR) run build
 	@CGO_ENABLED=0 go build -trimpath -tags embed -ldflags "-s -w -X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
 	@echo "build: ok ($(VERSION))"
+
+docker: ## Build the Docker image
+	@docker build --build-arg GO_VERSION=$(GO_VERSION) --build-arg NODE_VERSION=$(NODE_VERSION) --build-arg VERSION=$(VERSION) -t $(IMAGE_NAME):$(VERSION) .
 
 dev: ## Run air and vite with live reload
 	@$(MAKE) -j2 _dev-api _dev-web
