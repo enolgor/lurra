@@ -11,10 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List todos
-         * @description get all todos
-         */
+        /** List todos */
         get: {
             parameters: {
                 query?: never;
@@ -39,16 +36,13 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
             };
         };
         put?: never;
-        /**
-         * Add a todo
-         * @description add by json todo
-         */
+        /** Add a todo */
         post: {
             parameters: {
                 query?: never;
@@ -78,7 +72,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
                 /** @description Request Entity Too Large */
@@ -87,7 +81,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -96,7 +90,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
             };
@@ -114,10 +108,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Show a todo
-         * @description get todo by ID
-         */
+        /** Show a todo */
         get: {
             parameters: {
                 query?: never;
@@ -145,7 +136,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
                 /** @description Not Found */
@@ -154,7 +145,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -163,17 +154,14 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
             };
         };
         put?: never;
         post?: never;
-        /**
-         * Delete a todo
-         * @description delete by todo ID
-         */
+        /** Delete a todo */
         delete: {
             parameters: {
                 query?: never;
@@ -199,7 +187,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
                 /** @description Not Found */
@@ -208,7 +196,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -217,7 +205,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
             };
@@ -226,7 +214,7 @@ export interface paths {
         head?: never;
         /**
          * Update a todo
-         * @description update title and done state by json todo
+         * @description Only the fields present in the body are changed.
          */
         patch: {
             parameters: {
@@ -260,7 +248,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
                 /** @description Not Found */
@@ -269,7 +257,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
                 /** @description Request Entity Too Large */
@@ -278,7 +266,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -287,7 +275,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.HTTPError"];
+                        "application/json": components["schemas"]["httpx.HTTPError"];
                     };
                 };
             };
@@ -298,10 +286,10 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        "httputil.HTTPError": {
+        "httpx.HTTPError": {
             /** @example 400 */
             code: number;
-            /** @example status bad request */
+            /** @example title is empty */
             message: string;
             /** @example host/abc123-000001 */
             request_id?: string;

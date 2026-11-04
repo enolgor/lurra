@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/enolgor/lurra/internal/controller"
+	"github.com/enolgor/lurra/internal/api"
 	"github.com/enolgor/lurra/web"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -24,7 +24,7 @@ const (
 )
 
 // newRouter returns the HTTP handler with the middleware stack, the API and the SPA.
-func newRouter(logger *slog.Logger, c *controller.Controller) http.Handler {
+func newRouter(logger *slog.Logger, c *api.Controller) http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Heartbeat("/ping")) // before the logger, so health checks are not logged
 	r.Use(middleware.RequestID)
@@ -53,7 +53,7 @@ func newRouter(logger *slog.Logger, c *controller.Controller) http.Handler {
 }
 
 // New returns the HTTP server on port, with the router and timeouts set.
-func New(port int, logger *slog.Logger, c *controller.Controller) *http.Server {
+func New(port int, logger *slog.Logger, c *api.Controller) *http.Server {
 	return &http.Server{
 		Addr:              fmt.Sprintf(":%d", port),
 		Handler:           newRouter(logger, c),

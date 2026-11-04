@@ -1,4 +1,4 @@
-package httputil
+package httpx
 
 import (
 	"errors"
@@ -40,6 +40,6 @@ func NewError(w http.ResponseWriter, r *http.Request, err error) {
 // HTTPError is the JSON body of error responses.
 type HTTPError struct {
 	Code      int    `json:"code" example:"400" validate:"required"`
-	Message   string `json:"message" example:"status bad request" validate:"required"`
+	Message   string `json:"message" example:"title is empty" validate:"required"`
 	RequestID string `json:"request_id,omitempty" example:"host/abc123-000001"`
 }

@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/enolgor/lurra/internal/api"
 	"github.com/enolgor/lurra/internal/config"
-	"github.com/enolgor/lurra/internal/controller"
 	"github.com/enolgor/lurra/internal/logging"
 	"github.com/enolgor/lurra/internal/server"
 	"github.com/enolgor/lurra/internal/store/sqlite"
@@ -42,7 +42,7 @@ func main() {
 		slog.Error("opening store", "path", cfg.DBPath, "error", err)
 		os.Exit(1)
 	}
-	c := controller.New(store)
+	c := api.New(store)
 
 	srv := server.New(cfg.Port, logger, c)
 	slog.Info("listening", "addr", srv.Addr)
