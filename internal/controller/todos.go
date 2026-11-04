@@ -17,7 +17,12 @@ import (
 //	@Failure		500	{object}	httputil.HTTPError
 //	@Router			/todos [get]
 func (c *Controller) ListTodos(w http.ResponseWriter, r *http.Request) {
-	httputil.JSON(w, r, http.StatusOK, model.TodosAll())
+	todos, err := c.todos.ListTodos(r.Context())
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
+	httputil.JSON(w, r, http.StatusOK, todos)
 }
 
 // ShowTodo godoc
@@ -38,7 +43,7 @@ func (c *Controller) ShowTodo(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, err)
 		return
 	}
-	todo, err := model.TodoOne(id)
+	todo, err := c.todos.GetTodo(r.Context(), id)
 	if err != nil {
 		writeError(w, r, err)
 		return
@@ -69,7 +74,12 @@ func (c *Controller) AddTodo(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, err)
 		return
 	}
-	httputil.JSON(w, r, http.StatusCreated, model.Insert(addTodo.Title))
+	todo, err := c.todos.CreateTodo(r.Context(), addTodo.Title)
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
+	httputil.JSON(w, r, http.StatusCreated, todo)
 }
 
 // UpdateTodo godoc
@@ -102,7 +112,7 @@ func (c *Controller) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, err)
 		return
 	}
-	todo, err := model.Update(id, updateTodo)
+	todo, err := c.todos.UpdateTodo(r.Context(), id, updateTodo)
 	if err != nil {
 		writeError(w, r, err)
 		return
@@ -128,7 +138,7 @@ func (c *Controller) DeleteTodo(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, err)
 		return
 	}
-	if err := model.Delete(id); err != nil {
+	if err := c.todos.DeleteTodo(r.Context(), id); err != nil {
 		writeError(w, r, err)
 		return
 	}

@@ -12,6 +12,7 @@ import (
 	"github.com/enolgor/lurra/internal/controller"
 	"github.com/enolgor/lurra/internal/logging"
 	"github.com/enolgor/lurra/internal/server"
+	"github.com/enolgor/lurra/internal/store/memory"
 )
 
 // version is set at build time via -ldflags
@@ -36,7 +37,8 @@ func main() {
 	defer stop()
 	context.AfterFunc(ctx, stop) // a second signal kills the process immediately
 
-	c := controller.NewController()
+	todos := memory.New()
+	c := controller.New(todos)
 
 	srv := server.New(cfg.Port, logger, c)
 	slog.Info("listening", "addr", srv.Addr)

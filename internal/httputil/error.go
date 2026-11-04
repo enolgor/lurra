@@ -25,7 +25,7 @@ func WithStatus(status int, err error) error {
 // NewError writes err as a JSON error response, including the request ID, and adds err to the request log.
 // Errors without a StatusError are sent as a generic 500, so internal details don't leak.
 func NewError(w http.ResponseWriter, r *http.Request, err error) {
-	httplog.SetError(r.Context(), err)
+	_ = httplog.SetError(r.Context(), err)
 	status, msg := http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)
 	if se, ok := errors.AsType[*StatusError](err); ok {
 		status, msg = se.Status, se.Error()

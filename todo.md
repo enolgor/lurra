@@ -10,12 +10,17 @@
 - [ ] **Add a handler test** as a pattern to copy. `make test` has nothing to run yet.
 - [ ] **Pin Node** with `devEngines.runtime` in `web/package.json`, using `"onFail": "error"`.
       Renovate then picks it up, so check its first Node PR stays on LTS.
+- [ ] **Add a SQLite store** in `internal/store/sqlite` with `github.com/ncruces/go-sqlite3`,
+      implementing `model.TodoStore`. `Open(ctx, path)` sets the pragmas (WAL, busy_timeout,
+      foreign_keys, temp_store=MEMORY) and applies embedded `migrations/NNN_name.sql` files in
+      order, tracked with `PRAGMA user_version`. `main` swaps `memory.New()` for it and calls
+      `Close` after the server shuts down. Add `DB_PATH` to config and a `/data` dir in Docker.
 - [ ] **Enable graceful shutdown in air** when SQLite arrives: `send_interrupt = true` and
       `kill_delay = "1s"` under `[build]` in `.air.toml`, so `make dev` exercises the shutdown path.
 
 ## Code review
 
-- [ ] **Replace the global model with a `model.Store`.** Create it in `main` and pass it with
+- [x] **Replace the global model with a `model.Store`.** Create it in `main` and pass it with
       `controller.New(store)`, so handler tests don't share state. Do it before the handler test.
       Its methods take `ctx context.Context` first, so their logs include the request ID.
 - [x] **Add a sentinel `model.ErrNotFound`.** Controllers map every model error to 404; use

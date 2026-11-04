@@ -10,12 +10,14 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// Controller example
-type Controller struct{}
+// Controller holds the HTTP handlers and their dependencies.
+type Controller struct {
+	todos model.TodoStore
+}
 
-// NewController example
-func NewController() *Controller {
-	return &Controller{}
+// New returns a controller using todos for storage.
+func New(todos model.TodoStore) *Controller {
+	return &Controller{todos: todos}
 }
 
 // writeError maps domain errors to HTTP statuses and writes the error response.
