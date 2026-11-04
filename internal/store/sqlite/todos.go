@@ -29,14 +29,14 @@ func (s *Store) ListTodos(ctx context.Context) ([]model.Todo, error) {
 	return todos, rows.Err()
 }
 
-func (s *Store) GetTodo(ctx context.Context, id int) (model.Todo, error) {
-	row := s.db.QueryRowContext(ctx, `SELECT id, title, done FROM todos WHERE id = ?`, id)
-	return scanTodo(row, id)
-}
-
 func (s *Store) CreateTodo(ctx context.Context, title string) (model.Todo, error) {
 	row := s.db.QueryRowContext(ctx, `INSERT INTO todos (title) VALUES (?) RETURNING id, title, done`, title)
 	return scanTodo(row, 0)
+}
+
+func (s *Store) ReadTodo(ctx context.Context, id int) (model.Todo, error) {
+	row := s.db.QueryRowContext(ctx, `SELECT id, title, done FROM todos WHERE id = ?`, id)
+	return scanTodo(row, id)
 }
 
 // UpdateTodo changes only the fields that are set; nil pointers bind as NULL and COALESCE keeps the old value.

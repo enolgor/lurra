@@ -10,8 +10,8 @@ import (
 // Implementations live in internal/store, e.g. sqlite.Store.
 type TodoStore interface {
 	ListTodos(ctx context.Context) ([]Todo, error)
-	GetTodo(ctx context.Context, id int) (Todo, error)
 	CreateTodo(ctx context.Context, title string) (Todo, error)
+	ReadTodo(ctx context.Context, id int) (Todo, error)
 	UpdateTodo(ctx context.Context, id int, u UpdateTodo) (Todo, error)
 	DeleteTodo(ctx context.Context, id int) error
 }
@@ -28,14 +28,14 @@ var (
 	ErrTitleInvalid = errors.New("title is empty")
 )
 
-// AddTodo is the body for creating a todo.
-type AddTodo struct {
+// CreateTodo is the body for creating a todo.
+type CreateTodo struct {
 	Title string `json:"title" example:"buy milk" validate:"required"`
 }
 
 // Validation checks the fields of a new todo.
-func (a AddTodo) Validation() error {
-	if strings.TrimSpace(a.Title) == "" {
+func (c CreateTodo) Validation() error {
+	if strings.TrimSpace(c.Title) == "" {
 		return ErrTitleInvalid
 	}
 	return nil

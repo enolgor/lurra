@@ -42,7 +42,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Add a todo */
+        /** Create a todo */
         post: {
             parameters: {
                 query?: never;
@@ -50,10 +50,10 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            /** @description Add todo */
+            /** @description Create todo */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["model.AddTodo"];
+                    "application/json": components["schemas"]["model.CreateTodo"];
                 };
             };
             responses: {
@@ -108,7 +108,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Show a todo */
+        /** Read a todo */
         get: {
             parameters: {
                 query?: never;
@@ -294,7 +294,7 @@ export interface components {
             /** @example host/abc123-000001 */
             request_id?: string;
         };
-        "model.AddTodo": {
+        "model.CreateTodo": {
             /** @example buy milk */
             title: string;
         };

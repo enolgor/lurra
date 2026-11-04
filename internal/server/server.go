@@ -41,8 +41,8 @@ func newRouter(logger *slog.Logger, c *api.Controller) http.Handler {
 		r.Use(middleware.Timeout(handlerTimeout))
 		r.Route("/todos", func(r chi.Router) {
 			r.Get("/", c.ListTodos)
-			r.Post("/", c.AddTodo)
-			r.Get("/{id}", c.ShowTodo)
+			r.Post("/", c.CreateTodo)
+			r.Get("/{id}", c.ReadTodo)
 			r.Patch("/{id}", c.UpdateTodo)
 			r.Delete("/{id}", c.DeleteTodo)
 		})

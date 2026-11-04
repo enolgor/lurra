@@ -7,7 +7,7 @@ import (
 	"github.com/enolgor/lurra/internal/model"
 )
 
-func TestAddTodo_Validation(t *testing.T) {
+func TestCreateTodo_Validation(t *testing.T) {
 	tests := []struct {
 		name    string
 		title   string
@@ -21,8 +21,8 @@ func TestAddTodo_Validation(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			addTodo := model.AddTodo{Title: tt.title}
-			gotErr := addTodo.Validation()
+			createTodo := model.CreateTodo{Title: tt.title}
+			gotErr := createTodo.Validation()
 			if !errors.Is(gotErr, tt.wantErr) {
 				t.Errorf("Validation() error = %v, wantErr %v", gotErr, tt.wantErr)
 			}

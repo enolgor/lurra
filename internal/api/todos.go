@@ -21,7 +21,7 @@ func (c *Controller) ListTodos(w http.ResponseWriter, r *http.Request) {
 	httpx.JSON(w, r, http.StatusOK, todos)
 }
 
-// @Summary		Show a todo
+// @Summary		Read a todo
 // @Produce		json
 // @Param			id	path		int	true	"Todo ID"
 // @Success		200	{object}	model.Todo
@@ -29,13 +29,13 @@ func (c *Controller) ListTodos(w http.ResponseWriter, r *http.Request) {
 // @Failure		404	{object}	httpx.HTTPError
 // @Failure		500	{object}	httpx.HTTPError
 // @Router			/todos/{id} [get]
-func (c *Controller) ShowTodo(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) ReadTodo(w http.ResponseWriter, r *http.Request) {
 	id, err := pathID(r)
 	if err != nil {
 		writeError(w, r, err)
 		return
 	}
-	todo, err := c.todos.GetTodo(r.Context(), id)
+	todo, err := c.todos.ReadTodo(r.Context(), id)
 	if err != nil {
 		writeError(w, r, err)
 		return
@@ -43,26 +43,26 @@ func (c *Controller) ShowTodo(w http.ResponseWriter, r *http.Request) {
 	httpx.JSON(w, r, http.StatusOK, todo)
 }
 
-// @Summary		Add a todo
+// @Summary		Create a todo
 // @Accept			json
 // @Produce		json
-// @Param			todo	body		model.AddTodo	true	"Add todo"
+// @Param			todo	body		model.CreateTodo	true	"Create todo"
 // @Success		201		{object}	model.Todo
 // @Failure		400		{object}	httpx.HTTPError
 // @Failure		413		{object}	httpx.HTTPError
 // @Failure		500		{object}	httpx.HTTPError
 // @Router			/todos [post]
-func (c *Controller) AddTodo(w http.ResponseWriter, r *http.Request) {
-	var addTodo model.AddTodo
-	if err := httpx.Decode(r, &addTodo); err != nil {
+func (c *Controller) CreateTodo(w http.ResponseWriter, r *http.Request) {
+	var createTodo model.CreateTodo
+	if err := httpx.Decode(r, &createTodo); err != nil {
 		writeError(w, r, err)
 		return
 	}
-	if err := addTodo.Validation(); err != nil {
+	if err := createTodo.Validation(); err != nil {
 		writeError(w, r, err)
 		return
 	}
-	todo, err := c.todos.CreateTodo(r.Context(), addTodo.Title)
+	todo, err := c.todos.CreateTodo(r.Context(), createTodo.Title)
 	if err != nil {
 		writeError(w, r, err)
 		return
