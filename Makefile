@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 MAKEFLAGS += --no-print-directory
-.PHONY: help setup _fmt-check _lint test _vuln _audit security tidy _tidy-check _openapi bindings _bindings-check build docker dev _dev-api _dev-web clean check ci
+.PHONY: help setup _fmt-check _lint test cover _vuln _audit security tidy _tidy-check _openapi bindings _bindings-check build docker dev _dev-api _dev-web clean check ci
 
 TOOLS_MOD       := tools.mod
 GO_TOOL         := go tool -modfile=$(TOOLS_MOD)
@@ -36,6 +36,11 @@ _lint: # Run linters (includes go vet)
 
 test: ## Run tests with race detector
 	@go test -race -shuffle=on -cover ./...
+
+cover: ## Report test coverage across internal packages
+	@mkdir -p $(TMP_DIR)
+	@go test -coverpkg=./internal/... -coverprofile=$(TMP_DIR)/cover.out ./...
+	@go tool cover -func=$(TMP_DIR)/cover.out | tail -1
 
 _vuln: # Check Go dependencies for known vulnerabilities
 	@$(GO_TOOL) govulncheck ./...
