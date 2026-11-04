@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"errors"
+	"strings"
 )
 
 // TodoStore persists todos. Methods return ErrNotFound (wrapped) for unknown IDs.
@@ -34,7 +35,7 @@ type AddTodo struct {
 
 // Validation checks the fields of a new todo.
 func (a AddTodo) Validation() error {
-	if len(a.Title) == 0 {
+	if strings.TrimSpace(a.Title) == "" {
 		return ErrTitleInvalid
 	}
 	return nil
@@ -48,7 +49,7 @@ type UpdateTodo struct {
 
 // Validation checks the fields that are set.
 func (u UpdateTodo) Validation() error {
-	if u.Title != nil && len(*u.Title) == 0 {
+	if u.Title != nil && strings.TrimSpace(*u.Title) == "" {
 		return ErrTitleInvalid
 	}
 	return nil
