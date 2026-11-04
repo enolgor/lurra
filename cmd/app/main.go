@@ -12,7 +12,7 @@ import (
 	"github.com/enolgor/lurra/internal/controller"
 	"github.com/enolgor/lurra/internal/logging"
 	"github.com/enolgor/lurra/internal/server"
-	"github.com/enolgor/lurra/internal/store/memory"
+	"github.com/enolgor/lurra/internal/store/sqlite"
 )
 
 // version is set at build time via -ldflags
@@ -37,8 +37,12 @@ func main() {
 	defer stop()
 	context.AfterFunc(ctx, stop) // a second signal kills the process immediately
 
-	todos := memory.New()
-	c := controller.New(todos)
+	store, err := sqlite.Open(ctx, cfg.DBPath)
+	if err != nil {
+		slog.Error("opening store", "path", cfg.DBPath, "error", err)
+		os.Exit(1)
+	}
+	c := controller.New(store)
 
 	srv := server.New(cfg.Port, logger, c)
 	slog.Info("listening", "addr", srv.Addr)
@@ -59,7 +63,10 @@ func main() {
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		slog.Error("shutting down server", "error", err)
 	}
-	// Close other services here, after the server stopped using them (e.g. db.Close(shutdownCtx)).
+	// Close other services after the server, which stops using them once it has shut down.
+	if err := store.Close(); err != nil {
+		slog.Error("closing store", "error", err)
+	}
 
 	slog.Info("stopped")
 }

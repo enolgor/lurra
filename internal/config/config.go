@@ -12,6 +12,7 @@ import (
 type Config struct {
 	Port     int        `env:"PORT" envDefault:"8080"`
 	LogLevel slog.Level `env:"LOG_LEVEL" envDefault:"INFO"`
+	DBPath   string     `env:"DB_PATH" envDefault:"data/app.db"`
 }
 
 func Load() (Config, error) {

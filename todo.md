@@ -10,13 +10,10 @@
 - [ ] **Add a handler test** as a pattern to copy. `make test` has nothing to run yet.
 - [ ] **Pin Node** with `devEngines.runtime` in `web/package.json`, using `"onFail": "error"`.
       Renovate then picks it up, so check its first Node PR stays on LTS.
-- [ ] **Add a SQLite store** in `internal/store/sqlite` with `github.com/ncruces/go-sqlite3`,
-      implementing `model.TodoStore`. `Open(ctx, path)` sets the pragmas (WAL, busy_timeout,
-      foreign_keys, temp_store=MEMORY) and applies embedded `migrations/NNN_name.sql` files in
-      order, tracked with `PRAGMA user_version`. `main` swaps `memory.New()` for it and calls
-      `Close` after the server shuts down. Add `DB_PATH` to config and a `/data` dir in Docker.
-- [ ] **Enable graceful shutdown in air** when SQLite arrives: `send_interrupt = true` and
-      `kill_delay = "1s"` under `[build]` in `.air.toml`, so `make dev` exercises the shutdown path.
+- [x] **Give the SQLite database a home in Docker.** Create a `/data` dir owned by 65532 in the
+      image (the default `DB_PATH=data/app.db` resolves to `/data/app.db`), and mount a volume there.
+- [x] **Enable graceful shutdown in air** when SQLite arrives: `send_interrupt = true` and
+      `kill_delay = "6s"` under `[build]` in `.air.toml`, so `make dev` exercises the shutdown path.
 
 ## Code review
 
@@ -48,7 +45,7 @@
  - [x] tool github.com/swaggo/swag/v2/cmd/swag
  - [x] tool github.com/go-task/task/v3/cmd/task@latest (nope - use makefile)
  - [x] tool github.com/air-verse/air
- - [ ] sqlite
+ - [x] sqlite
  - [ ] go get -tool github.com/getsops/sops/v3/cmd/sops@latest
  - [x] air + vite/proxy for live-reload (vite proxy done, air pending)
  - [x] embed dist + serve (serving from disk, embed pending)

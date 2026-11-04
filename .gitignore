@@ -189,3 +189,6 @@ vite.config.ts.timestamp-*
 .tmp/
 bin/
 .claude/
+
+# SQLite database (DB_PATH)
+data/

@@ -1,18 +1,15 @@
-.claude
+# The Dockerfile copies only what the build needs; this keeps the build context small,
+# and keeps local artifacts and secrets out of it.
 .git
-.github
-.idea
 .tmp
-.vscode
 bin
+data
 web/dist
 web/node_modules
 
-# secrets must never end up in the image
+# secrets must never be sent to the builder
 .env
 .env.*
 
-# test and log output
-*.out
-*.log
-coverage.*
+# tests don't affect the binary, so changing them shouldn't rebuild it
+**/*_test.go

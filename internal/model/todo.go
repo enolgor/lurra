@@ -6,7 +6,7 @@ import (
 )
 
 // TodoStore persists todos. Methods return ErrNotFound (wrapped) for unknown IDs.
-// Implementations live in internal/store, e.g. memory.Store.
+// Implementations live in internal/store, e.g. sqlite.Store.
 type TodoStore interface {
 	ListTodos(ctx context.Context) ([]Todo, error)
 	GetTodo(ctx context.Context, id int) (Todo, error)
