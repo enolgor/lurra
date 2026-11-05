@@ -21,7 +21,7 @@ func (s *Store) ListTodos(ctx context.Context) ([]model.Todo, error) {
 	var todos []model.Todo
 	for rows.Next() {
 		var t model.Todo
-		if err := rows.Scan(&t.ID, &t.Title, &t.Done); err != nil {
+		if err := rows.Scan(&t.ID, &t.Title, &t.Done); err != nil { // coverage-ignore
 			return nil, err
 		}
 		todos = append(todos, t)
@@ -54,7 +54,7 @@ func (s *Store) DeleteTodo(ctx context.Context, id int) error {
 		return err
 	}
 	n, err := res.RowsAffected()
-	if err != nil {
+	if err != nil { // coverage-ignore
 		return err
 	}
 	if n == 0 {

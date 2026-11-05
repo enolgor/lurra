@@ -6,6 +6,12 @@
       Check that the onboarding PR detects `tools.mod`.
 - [ ] **Add more tests.** `make test` only runs the migration test so far; start with a handler
       test (`httptest` against `server.New(...).Handler`) as a pattern to copy.
+- [x] **Merge `make test` and `make cover`** before coverage goes into CI, so tests run once: let
+      `test` write the profile (`-coverpkg=./internal/... -coverprofile=.tmp/cover.out`, works with
+      `-race`) and drop `cover` or make it only print the report from that profile.
+- [ ] **Enforce coverage with [go-test-coverage](https://github.com/vladopajic/go-test-coverage).**
+      Add it to `tools.mod`, configure thresholds in `.testcoverage.yml`, and run it on the profile
+      from `make test` in `ci`. Start with a low threshold and raise it as tests grow.
 - [ ] **Pin Node** with `devEngines.runtime` in `web/package.json`, using `"onFail": "error"`.
       Renovate then picks it up, so check its first Node PR stays on LTS.
 - [ ] **Add an index.html fallback for the SPA** once the Svelte version has client-side routes.

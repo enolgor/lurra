@@ -8,6 +8,7 @@ WEB_DIR         := web
 API_SCHEMA_PATH := $(WEB_DIR)/src/schema.ts
 API_INFO_PATH   := internal/api/api.go
 TMP_DIR         := .tmp
+COVER_PROFILE   := $(TMP_DIR)/cover.out
 BIN_DIR         := bin
 BIN_NAME        := app
 CMD_PATH        := ./cmd/$(BIN_NAME)
@@ -34,16 +35,16 @@ _lint: # Run linters (includes go vet)
 	@$(GO_TOOL) golangci-lint run
 	@echo "lint: ok"
 
-test: ## Run tests with race detector
-	@go test -race -shuffle=on -cover ./...
+test: ## Run tests with race detector and write the coverage profile
+	@mkdir -p $(TMP_DIR)
+	@go test -race -shuffle=on -coverprofile=$(COVER_PROFILE) ./...
 
 stress: ## Run concurrency tests repeatedly under the race detector
 	@go test -race -count=20 -run Concurrent ./...
 
-cover: ## Report test coverage across internal packages
-	@mkdir -p $(TMP_DIR)
-	@go test -coverpkg=./internal/... -coverprofile=$(TMP_DIR)/cover.out ./...
-	@go tool cover -func=$(TMP_DIR)/cover.out | tail -1
+cover: ## Check coverage thresholds (.testcoverage.yml) on the profile written by make test
+	@test -f $(COVER_PROFILE) || (echo "no coverage profile, run 'make test' first" && exit 1)
+	@$(GO_TOOL) go-test-coverage -c .testcoverage.yml -p $(COVER_PROFILE)
 
 _vuln: # Check Go dependencies for known vulnerabilities
 	@$(GO_TOOL) govulncheck ./...

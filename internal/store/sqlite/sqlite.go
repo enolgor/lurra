@@ -36,7 +36,7 @@ func Open(ctx context.Context, path string) (*Store, error) {
 	// "database is locked" errors when a read transaction later tries to write.
 	query := url.Values{"_pragma": pragmas, "_txlock": {"immediate"}}
 	db, err := sql.Open("sqlite3", "file:"+path+"?"+query.Encode())
-	if err != nil {
+	if err != nil { // coverage-ignore
 		return nil, err
 	}
 	if err := db.PingContext(ctx); err != nil {

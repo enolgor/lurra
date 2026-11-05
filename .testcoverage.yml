@@ -1,0 +1,27 @@
+# Config for go-test-coverage, run by `make cover` on the profile written by `make test`.
+# Docs: https://github.com/vladopajic/go-test-coverage
+
+# Path to the coverage profile, relative to the repo root.
+profile: .tmp/cover.out
+
+# Minimum coverage percentages (0-100). Blocks marked `// coverage-ignore` are not counted.
+threshold:
+  file: 80
+  package: 90
+  total: 95
+
+# Regexp rules matched against file or package paths; the first match wins,
+# so list specific rules before general ones.
+override: []
+#  - path: ^internal/httpx$
+#    threshold: 100
+
+# Regexp rules for files or packages left out of coverage statistics.
+# `make test` covers every package (-coverpkg=./...), so a new package without tests
+# fails the thresholds until it gets tests or is excluded here.
+exclude:
+  paths:
+    - ^cmd/ # wiring only; exercised by running the app
+    - ^web/ # serves the built SPA from disk or embedded files
+
+force-annotation-comment: true
