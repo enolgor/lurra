@@ -28,7 +28,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger := logging.New(cfg.LogLevel)
+	logger := slog.New(logging.WithRequestID(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: cfg.LogLevel})))
 	slog.SetDefault(logger)
 
 	slog.Info("starting", "version", version)

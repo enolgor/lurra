@@ -3,16 +3,15 @@ package logging
 import (
 	"context"
 	"log/slog"
-	"os"
 
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-// New returns a text logger that adds the request ID to records logged with a
-// request context, e.g. slog.InfoContext(ctx, ...).
-func New(level slog.Level) *slog.Logger {
-	h := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: level})
-	return slog.New(requestIDHandler{h})
+// WithRequestID wraps h so it adds the request ID to records logged with a request
+// context, e.g. slog.InfoContext(ctx, ...). The ID is a record attribute, so it ends up
+// inside any group opened with WithGroup (e.g. req.request_id) rather than at the top level.
+func WithRequestID(h slog.Handler) slog.Handler {
+	return requestIDHandler{h}
 }
 
 type requestIDHandler struct{ slog.Handler }
