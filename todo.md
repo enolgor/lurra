@@ -13,7 +13,7 @@
       Test that an unknown route (`/todos/1`) returns `index.html` with 200, a real asset returns
       the file, a missing asset (`/assets/nope.js`) returns 404, and an unknown API route
       (`/api/v1/nope`) returns 404, not the SPA.
-- [ ] Configure using dlv easily
+- [x] Configure using dlv easily
 - [ ] devcontainers json?
 
 
@@ -33,6 +33,8 @@
 - In Docker the database is `/data/app.db`; mount a volume at `/data` to keep it.
 - `kill_delay` in `.air.toml` must stay above `shutdownTimeout` in `main.go`.
 - `writeTimeout` must exceed `handlerTimeout` in `server.go`.
+- `make debug` serves the built SPA (with source maps) at `:8080` under Delve; attach with
+  "Attach to make debug" (F5) in VS Code. Ctrl+C kills the app without a graceful shutdown.
 
 ## Stack
 

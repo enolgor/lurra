@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 MAKEFLAGS += --no-print-directory
-.PHONY: help setup _fmt-check _lint test stress cover _vuln _audit security tidy _tidy-check _openapi bindings _bindings-check build docker dev _dev-api _dev-web clean check ci
+.PHONY: help _check-env setup _fmt-check _lint test stress cover _vuln _audit security tidy _tidy-check _openapi bindings _bindings-check build docker dev _dev-api _dev-web debug clean check ci
 
 TOOLS_MOD       := tools.mod
 GO_TOOL         := go tool -modfile=$(TOOLS_MOD)
@@ -21,7 +21,11 @@ help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "} {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
 
-setup: ## Download deps and compile dev tools
+_check-env: # Fail early if go is missing, or node is missing or has the wrong major version
+	@command -v go >/dev/null || (echo "go not found: install Go (go.mod's toolchain is fetched automatically)" && exit 1)
+	@node -v 2>/dev/null | grep -q '^v$(NODE_VERSION)\.' || (echo "need node $(NODE_VERSION).x (web/package.json)" && exit 1)
+
+setup: _check-env ## Download deps and compile dev tools
 	@go mod download
 	@go build -modfile=$(TOOLS_MOD) tool
 	@npm --prefix $(WEB_DIR) ci --silent --no-audit --no-fund
@@ -94,6 +98,12 @@ _dev-api:
 
 _dev-web:
 	@npm --prefix $(WEB_DIR) run dev
+
+# Remove --continue to start paused until a debugger attaches (e.g. to debug startup code).
+# stdin from /dev/null keeps Delve from handing the terminal to the app, so Ctrl+C stops Delve too.
+debug: ## Build the SPA with source maps, then run the API under Delve (headless on :2345); attach your editor
+	@npm --prefix $(WEB_DIR) run build -- --sourcemap
+	@$(GO_TOOL) dlv debug $(CMD_PATH) --output $(BIN_DIR)/debug --headless --listen=127.0.0.1:2345 --api-version=2 --accept-multiclient --continue < /dev/null
 
 clean: ## Remove build artifacts
 	@rm -rf $(BIN_DIR) $(TMP_DIR) $(WEB_DIR)/dist
