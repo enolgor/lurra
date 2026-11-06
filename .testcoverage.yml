@@ -1,4 +1,4 @@
-# Config for go-test-coverage, run by `make cover` on the profile written by `make test`.
+# Config for go-test-coverage, run by `make test-go` right after the Go tests.
 # Docs: https://github.com/vladopajic/go-test-coverage
 
 # Path to the coverage profile, relative to the repo root.

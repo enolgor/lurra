@@ -12,7 +12,8 @@ swag → OpenAPI → `web/src/schema.ts`, Vite SPA embedded in the binary.
 ## Workflow
 
 - Answer questions and wait; edit files only after an explicit go-ahead.
-- After every change run `make check`, then `make test && make cover`; fix all failures.
+- After every change run `make check-go test-go` (Go) or `make check-web test-web` (web); run
+  `make ci` before finishing. Fix all failures.
 - Never run `docker build`, containers or the app to verify; the user does that.
 - Run `make bindings` after changing API annotations or request/response types.
 - Run `make tidy` (not just `go mod tidy`) after dependency changes.
@@ -22,8 +23,8 @@ swag → OpenAPI → `web/src/schema.ts`, Vite SPA embedded in the binary.
 
 ## Rules
 
-- Coverage target is 100% (`make cover`). New Go code ships with tests; when a branch isn't worth
-  a test (near-impossible or too costly), mark it `// coverage-ignore: <reason>`.
+- Coverage target is 100% (checked by `make test-go`). New Go code ships with tests; when a
+  branch isn't worth a test (near-impossible or too costly), mark it `// coverage-ignore: <reason>`.
   Plain `if err != nil { return ..., err }` bodies are excluded automatically.
 - Test behavior, not just lines: new features get tests for their intended behavior and edge
   cases, and bug fixes get a regression test, even when coverage is already 100%.
