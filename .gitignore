@@ -29,8 +29,8 @@ go.work.sum
 .env
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
 
 # Logs
 logs
@@ -39,6 +39,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+pnpm-debug.log*
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -192,3 +193,15 @@ bin/
 
 # SQLite database (DB_PATH)
 data/
+
+# Web build and local env files (from create-vite)
+dist-ssr
+*.local
+
+# Editor and OS files
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

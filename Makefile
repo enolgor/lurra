@@ -32,7 +32,7 @@ MAKEFLAGS += --no-print-directory
 TOOLS_MOD       := tools.mod
 GO_TOOL         := go tool -modfile=$(TOOLS_MOD)
 WEB_DIR         := web
-API_SCHEMA_PATH := $(WEB_DIR)/src/schema.ts
+API_SCHEMA_PATH := $(WEB_DIR)/src/api/schema.ts
 API_INFO_PATH   := internal/api/api.go
 TMP_DIR         := .tmp
 COVER_PROFILE   := $(TMP_DIR)/cover.out
