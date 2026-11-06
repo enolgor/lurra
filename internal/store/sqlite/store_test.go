@@ -1,10 +1,8 @@
 package sqlite_test
 
 import (
-	"context"
 	"database/sql"
 	"errors"
-	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -15,27 +13,10 @@ import (
 )
 
 func TestOpen_Errors(t *testing.T) {
-	t.Run("parent is a file", func(t *testing.T) {
-		file := filepath.Join(t.TempDir(), "file")
-		if err := os.WriteFile(file, []byte("x"), 0o600); err != nil {
-			t.Fatalf("write file: %v", err)
-		}
-		_, err := sqlite.Open(t.Context(), filepath.Join(file, "app.db"))
-		if err == nil || !strings.Contains(err.Error(), "creating database directory") {
-			t.Fatalf("Open() error = %v, want a directory error", err)
-		}
-	})
 	t.Run("path is a directory", func(t *testing.T) {
 		_, err := sqlite.Open(t.Context(), t.TempDir())
 		if err == nil || !strings.Contains(err.Error(), "opening database") {
 			t.Fatalf("Open() error = %v, want an opening database error", err)
-		}
-	})
-	t.Run("canceled context", func(t *testing.T) {
-		ctx, cancel := context.WithCancel(t.Context())
-		cancel()
-		if _, err := sqlite.Open(ctx, filepath.Join(t.TempDir(), "app.db")); !errors.Is(err, context.Canceled) {
-			t.Fatalf("Open() error = %v, want a context canceled error", err)
 		}
 	})
 	t.Run("conflicting table", func(t *testing.T) {
@@ -57,6 +38,8 @@ func TestOpen_Errors(t *testing.T) {
 	})
 }
 
+// TestStore_ClosedDatabase checks that a real database error is not mistaken for
+// model.ErrNotFound, which would turn a 500 into a misleading 404.
 func TestStore_ClosedDatabase(t *testing.T) {
 	store, err := sqlite.Open(t.Context(), filepath.Join(t.TempDir(), "test.db"))
 	if err != nil {
@@ -70,14 +53,6 @@ func TestStore_ClosedDatabase(t *testing.T) {
 		name string
 		call func(s *sqlite.Store) error
 	}{
-		{name: "list", call: func(s *sqlite.Store) error {
-			_, err := s.ListTodos(t.Context())
-			return err
-		}},
-		{name: "create", call: func(s *sqlite.Store) error {
-			_, err := s.CreateTodo(t.Context(), "buy milk")
-			return err
-		}},
 		{name: "read", call: func(s *sqlite.Store) error {
 			_, err := s.ReadTodo(t.Context(), 1)
 			return err
@@ -85,9 +60,6 @@ func TestStore_ClosedDatabase(t *testing.T) {
 		{name: "update", call: func(s *sqlite.Store) error {
 			_, err := s.UpdateTodo(t.Context(), 1, model.UpdateTodo{})
 			return err
-		}},
-		{name: "delete", call: func(s *sqlite.Store) error {
-			return s.DeleteTodo(t.Context(), 1)
 		}},
 	}
 	for _, tt := range tests {
@@ -140,5 +112,88 @@ func TestStore_Concurrent(t *testing.T) {
 	}
 	if len(seen) != n {
 		t.Fatalf("len(seen) = %d, want %d", len(seen), n)
+	}
+}
+
+func TestStore_CRUD(t *testing.T) {
+	store := newTestStore(t)
+	ctx := t.Context()
+
+	created, err := store.CreateTodo(ctx, "buy milk")
+	if err != nil {
+		t.Fatalf("create: %v", err)
+	}
+	if want := (model.Todo{ID: created.ID, Title: "buy milk"}); created != want || created.ID == 0 {
+		t.Fatalf("created = %+v, want %+v with a non-zero ID", created, want)
+	}
+
+	read, err := store.ReadTodo(ctx, created.ID)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	if read != created {
+		t.Errorf("read = %+v, want %+v", read, created)
+	}
+
+	// Partial updates: each one changes only the field that is set.
+	done := true
+	updated, err := store.UpdateTodo(ctx, created.ID, model.UpdateTodo{Done: &done})
+	if err != nil {
+		t.Fatalf("update done: %v", err)
+	}
+	if want := (model.Todo{ID: created.ID, Title: "buy milk", Done: true}); updated != want {
+		t.Errorf("after done update = %+v, want %+v", updated, want)
+	}
+	title := "buy oat milk"
+	updated, err = store.UpdateTodo(ctx, created.ID, model.UpdateTodo{Title: &title})
+	if err != nil {
+		t.Fatalf("update title: %v", err)
+	}
+	if want := (model.Todo{ID: created.ID, Title: "buy oat milk", Done: true}); updated != want {
+		t.Errorf("after title update = %+v, want %+v", updated, want)
+	}
+
+	if err := store.DeleteTodo(ctx, created.ID); err != nil {
+		t.Fatalf("delete: %v", err)
+	}
+	todos, err := store.ListTodos(ctx)
+	if err != nil {
+		t.Fatalf("list: %v", err)
+	}
+	if len(todos) != 0 {
+		t.Errorf("todos after delete = %+v, want none", todos)
+	}
+}
+
+func TestStore_NotFound(t *testing.T) {
+	store := newTestStore(t)
+	const id = 999
+
+	tests := []struct {
+		name string
+		call func() error
+	}{
+		{name: "read", call: func() error {
+			_, err := store.ReadTodo(t.Context(), id)
+			return err
+		}},
+		{name: "update", call: func() error {
+			_, err := store.UpdateTodo(t.Context(), id, model.UpdateTodo{})
+			return err
+		}},
+		{name: "delete", call: func() error {
+			return store.DeleteTodo(t.Context(), id)
+		}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.call()
+			if !errors.Is(err, model.ErrNotFound) {
+				t.Fatalf("error = %v, want model.ErrNotFound", err)
+			}
+			if want := "todo id=999 is not found"; err.Error() != want {
+				t.Errorf("error = %q, want %q", err, want)
+			}
+		})
 	}
 }

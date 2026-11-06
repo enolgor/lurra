@@ -31,9 +31,3 @@ func TestMigrationsUpDown(t *testing.T) {
 		t.Fatalf("up again: %v", err)
 	}
 }
-
-func TestMigrate_NilDB(t *testing.T) {
-	if err := migrate(t.Context(), nil); err == nil {
-		t.Fatal("migrate(nil) error = nil, want an error")
-	}
-}

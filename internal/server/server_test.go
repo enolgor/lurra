@@ -37,6 +37,8 @@ func doRequest(t *testing.T, h http.Handler, method, path, body string) *httptes
 	return rec
 }
 
+// TestAPI_Errors covers only what needs the full server: the {id} route parameter, the
+// real store's not-found error and the RequestSize middleware. The api tests cover the rest.
 func TestAPI_Errors(t *testing.T) {
 	// just over maxRequestBody (1 MB) in server.go
 	bigBody := `{"title":"` + strings.Repeat("a", 1<<20) + `"}`
@@ -47,20 +49,9 @@ func TestAPI_Errors(t *testing.T) {
 		body       string
 		wantStatus int
 	}{
-		{name: "read invalid id", method: http.MethodGet, path: "/api/v1/todos/abc", wantStatus: http.StatusBadRequest},
-		{name: "read not found", method: http.MethodGet, path: "/api/v1/todos/999", wantStatus: http.StatusNotFound},
-		{name: "create empty title", method: http.MethodPost, path: "/api/v1/todos", body: `{"title":""}`, wantStatus: http.StatusBadRequest},
-		{name: "create only spaces", method: http.MethodPost, path: "/api/v1/todos", body: `{"title":" "}`, wantStatus: http.StatusBadRequest},
-		{name: "create unknown field", method: http.MethodPost, path: "/api/v1/todos", body: `{"titel":"x"}`, wantStatus: http.StatusBadRequest},
-		{name: "create malformed json", method: http.MethodPost, path: "/api/v1/todos", body: `{"title":}`, wantStatus: http.StatusBadRequest},
-		{name: "create body too large", method: http.MethodPost, path: "/api/v1/todos", body: bigBody, wantStatus: http.StatusRequestEntityTooLarge},
-		{name: "update invalid id", method: http.MethodPatch, path: "/api/v1/todos/abc", body: `{"done":true}`, wantStatus: http.StatusBadRequest},
-		{name: "update not found", method: http.MethodPatch, path: "/api/v1/todos/999", body: `{"done":true}`, wantStatus: http.StatusNotFound},
-		{name: "update empty title", method: http.MethodPatch, path: "/api/v1/todos/1", body: `{"title":""}`, wantStatus: http.StatusBadRequest},
-		{name: "update only spaces", method: http.MethodPatch, path: "/api/v1/todos/1", body: `{"title":"  "}`, wantStatus: http.StatusBadRequest},
-		{name: "update malformed json", method: http.MethodPatch, path: "/api/v1/todos/1", body: `{"done":}`, wantStatus: http.StatusBadRequest},
-		{name: "delete invalid id", method: http.MethodDelete, path: "/api/v1/todos/abc", wantStatus: http.StatusBadRequest},
-		{name: "delete not found", method: http.MethodDelete, path: "/api/v1/todos/999", wantStatus: http.StatusNotFound},
+		{name: "invalid id", method: http.MethodGet, path: "/api/v1/todos/abc", wantStatus: http.StatusBadRequest},
+		{name: "not found", method: http.MethodGet, path: "/api/v1/todos/999", wantStatus: http.StatusNotFound},
+		{name: "body too large", method: http.MethodPost, path: "/api/v1/todos", body: bigBody, wantStatus: http.StatusRequestEntityTooLarge},
 	}
 
 	for _, tt := range tests {

@@ -113,3 +113,124 @@ func TestReadTodo_WrappedNotFound(t *testing.T) {
 		t.Errorf("HTTPError = %+v, want %+v", got, want)
 	}
 }
+
+// stubStore answers from its inputs, so responses show what the handler passed to the store.
+type stubStore struct {
+	deletedID int
+}
+
+func (s *stubStore) ListTodos(_ context.Context) ([]model.Todo, error) {
+	return []model.Todo{{ID: 1, Title: "buy milk"}}, nil
+}
+
+func (s *stubStore) CreateTodo(_ context.Context, title string) (model.Todo, error) {
+	return model.Todo{ID: 1, Title: title}, nil
+}
+
+func (s *stubStore) ReadTodo(_ context.Context, id int) (model.Todo, error) {
+	return model.Todo{ID: id, Title: "buy milk"}, nil
+}
+
+func (s *stubStore) UpdateTodo(_ context.Context, id int, u model.UpdateTodo) (model.Todo, error) {
+	todo := model.Todo{ID: id, Title: "buy milk"}
+	if u.Done != nil {
+		todo.Done = *u.Done
+	}
+	return todo, nil
+}
+
+func (s *stubStore) DeleteTodo(_ context.Context, id int) error {
+	s.deletedID = id
+	return nil
+}
+
+func TestController_Success(t *testing.T) {
+	tests := []struct {
+		name       string
+		handler    func(*api.Controller) http.HandlerFunc
+		id         string
+		body       string
+		wantStatus int
+		wantBody   string // empty means no body
+	}{
+		{
+			name:       "ListTodos",
+			handler:    func(c *api.Controller) http.HandlerFunc { return c.ListTodos },
+			wantStatus: http.StatusOK,
+			wantBody:   `[{"id":1,"title":"buy milk","done":false}]`,
+		},
+		{
+			name:       "CreateTodo",
+			handler:    func(c *api.Controller) http.HandlerFunc { return c.CreateTodo },
+			body:       `{"title":"walk the dog"}`,
+			wantStatus: http.StatusCreated,
+			wantBody:   `{"id":1,"title":"walk the dog","done":false}`,
+		},
+		{
+			name:       "ReadTodo",
+			handler:    func(c *api.Controller) http.HandlerFunc { return c.ReadTodo },
+			id:         "7",
+			wantStatus: http.StatusOK,
+			wantBody:   `{"id":7,"title":"buy milk","done":false}`,
+		},
+		{
+			name:       "UpdateTodo",
+			handler:    func(c *api.Controller) http.HandlerFunc { return c.UpdateTodo },
+			id:         "7",
+			body:       `{"done":true}`,
+			wantStatus: http.StatusOK,
+			wantBody:   `{"id":7,"title":"buy milk","done":true}`,
+		},
+		{
+			name:       "DeleteTodo",
+			handler:    func(c *api.Controller) http.HandlerFunc { return c.DeleteTodo },
+			id:         "7",
+			wantStatus: http.StatusNoContent,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			store := &stubStore{}
+			rec := httptest.NewRecorder()
+			tt.handler(api.New(store))(rec, newRequest(t, tt.id, tt.body))
+
+			if rec.Code != tt.wantStatus {
+				t.Fatalf("status = %d, want %d; body: %s", rec.Code, tt.wantStatus, rec.Body)
+			}
+			if got := strings.TrimSpace(rec.Body.String()); got != tt.wantBody {
+				t.Errorf("body = %s, want %s", got, tt.wantBody)
+			}
+		})
+	}
+
+	t.Run("DeleteTodo passes the id", func(t *testing.T) {
+		store := &stubStore{}
+		api.New(store).DeleteTodo(httptest.NewRecorder(), newRequest(t, "7", ""))
+		if store.deletedID != 7 {
+			t.Errorf("deleted id = %d, want 7", store.deletedID)
+		}
+	})
+}
+
+func TestController_InvalidBody(t *testing.T) {
+	c := api.New(failingStore{}) // the store must not be reached
+
+	tests := []struct {
+		name    string
+		handler http.HandlerFunc
+		id      string
+	}{
+		{name: "CreateTodo", handler: c.CreateTodo},
+		{name: "UpdateTodo", handler: c.UpdateTodo, id: "1"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+			tt.handler(rec, newRequest(t, tt.id, `{"title":`))
+
+			if rec.Code != http.StatusBadRequest {
+				t.Fatalf("status = %d, want %d; body: %s", rec.Code, http.StatusBadRequest, rec.Body)
+			}
+		})
+	}
+}

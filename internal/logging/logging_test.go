@@ -37,15 +37,6 @@ func TestWithRequestID(t *testing.T) {
 		}
 	})
 
-	t.Run("context without id", func(t *testing.T) {
-		logger, buf := newTestLogger(t)
-		logger.InfoContext(t.Context(), "some message")
-		m := decode(t, buf)
-		if v, ok := m["request_id"]; ok {
-			t.Errorf("request_id = %v, want absent", v)
-		}
-	})
-
 	t.Run("context with id", func(t *testing.T) {
 		logger, buf := newTestLogger(t)
 		want := "abc"

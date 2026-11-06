@@ -6,9 +6,9 @@ profile: .tmp/cover.out
 
 # Minimum coverage percentages (0-100). Blocks marked `// coverage-ignore` are not counted.
 threshold:
-  file: 80
-  package: 90
-  total: 95
+  file: 100
+  package: 100
+  total: 100
 
 # Regexp rules matched against file or package paths; the first match wins,
 # so list specific rules before general ones.
@@ -17,11 +17,16 @@ override: []
 #    threshold: 100
 
 # Regexp rules for files or packages left out of coverage statistics.
-# `make test` covers every package (-coverpkg=./...), so a new package without tests
-# fails the thresholds until it gets tests or is excluded here.
+# Packages without tests are reported at 0%, so a new one fails the thresholds
+# until it gets tests or is excluded here.
 exclude:
   paths:
     - ^cmd/ # wiring only; exercised by running the app
     - ^web/ # serves the built SPA from disk or embedded files
 
+  # Don't count the body of plain `if err != nil { return ..., err }` checks: they only pass
+  # an error up. The condition itself is still counted.
+  single-return-error-checks: true
+
+# Every `// coverage-ignore` must say why, e.g. `// coverage-ignore: <reason>`.
 force-annotation-comment: true

@@ -1,20 +1,21 @@
 # Todo
 
 - [ ] **Add GitHub CI.** A workflow running `make setup ci`, a separate one for `make security`,
-      and `ci` as a required check on `main`.
+      and `ci` as a required check on `main`. Report tests, coverage, etc. etc. for PR merge checks.
 - [ ] **Install the Renovate app** when publishing. The config is in `.github/renovate.json`.
       Check that the onboarding PR detects `tools.mod`.
-- [ ] **Add more tests.** `make test` only runs the migration test so far; start with a handler
-      test (`httptest` against `server.New(...).Handler`) as a pattern to copy.
 - [x] **Merge `make test` and `make cover`** before coverage goes into CI, so tests run once: let
       `test` write the profile (`-coverpkg=./internal/... -coverprofile=.tmp/cover.out`, works with
       `-race`) and drop `cover` or make it only print the report from that profile.
-- [ ] **Enforce coverage with [go-test-coverage](https://github.com/vladopajic/go-test-coverage).**
-      Add it to `tools.mod`, configure thresholds in `.testcoverage.yml`, and run it on the profile
-      from `make test` in `ci`. Start with a low threshold and raise it as tests grow.
 - [ ] **Pin Node** with `devEngines.runtime` in `web/package.json`, using `"onFail": "error"`.
       Renovate then picks it up, so check its first Node PR stays on LTS.
 - [ ] **Add an index.html fallback for the SPA** once the Svelte version has client-side routes.
+      Test that an unknown route (`/todos/1`) returns `index.html` with 200, a real asset returns
+      the file, a missing asset (`/assets/nope.js`) returns 404, and an unknown API route
+      (`/api/v1/nope`) returns 404, not the SPA.
+- [ ] Configure using dlv easily
+- [ ] devcontainers json?
+
 
 ## Good to know
 

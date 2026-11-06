@@ -24,7 +24,7 @@ func Decode(r *http.Request, v any) error {
 func JSON(w http.ResponseWriter, r *http.Request, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	if err := json.MarshalWrite(w, v); err != nil {
+	if err := json.MarshalWrite(w, v); err != nil { // coverage-ignore: only fails when the client disconnects mid-write, or for types handlers never pass
 		slog.ErrorContext(r.Context(), "writing JSON response", "error", err)
 	}
 }

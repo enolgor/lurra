@@ -28,7 +28,7 @@ func migrate(ctx context.Context, db *sql.DB) error {
 
 func newProvider(db *sql.DB) (*goose.Provider, error) {
 	fsys, err := fs.Sub(migrations, "migrations")
-	if err != nil { // coverage-ignore
+	if err != nil {
 		return nil, err
 	}
 	return goose.NewProvider(goose.DialectSQLite3, db, fsys, goose.WithSlog(slog.Default()))
