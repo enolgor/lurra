@@ -1,0 +1,48 @@
+{
+  // Prettier (web/prettier.config.js, printWidth 100): ruler at 100 and format on save.
+  // requireConfig keeps it from formatting files outside web/, which have no Prettier config.
+  "prettier.requireConfig": true,
+  "[svelte]": {
+    "editor.rulers": [100],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.rulers": [100],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.rulers": [100],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[html]": {
+    "editor.rulers": [100],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.rulers": [100],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // ESLint (web/eslint.config.js), including .svelte files.
+  "eslint.workingDirectories": ["web"],
+  "eslint.validate": ["javascript", "typescript", "svelte"],
+
+  // Go: gofmt on save (no line limit, so no ruler).
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.formatOnSave": true
+  }
+}

@@ -4,9 +4,9 @@
 #   check-go    Go static checks: gofmt, go.mod tidiness, golangci-lint
 #   test-go     Go tests with the race detector, then coverage thresholds
 #   stress      Concurrency tests, repeatedly, under the race detector
-#   check-web   Web static checks: API bindings up to date (lint TODO, with Svelte)
+#   check-web   Web static checks: API bindings up to date, svelte-check, Prettier, ESLint
 #   test-web    Web tests (TODO, with Svelte)
-#   bindings    Regenerate web/src/schema.ts from the API annotations
+#   bindings    Regenerate web/src/api/schema.ts from the API annotations
 #   tidy        Tidy go.mod/go.sum and tools.mod/tools.sum
 #   security    Vulnerability checks for Go and npm dependencies
 #   dev         Run air and vite with live reload
@@ -22,7 +22,7 @@
 MAKEFLAGS += --no-print-directory
 .PHONY: help _check-env setup \
 	check-go _fmt-check _tidy-check _lint test-go stress \
-	check-web _bindings-check _openapi bindings test-web \
+	check-web _bindings-check _lint-web _openapi bindings test-web \
 	tidy security _vuln _audit \
 	dev _dev-api _dev-web debug \
 	build docker clean ci
@@ -93,15 +93,19 @@ stress: ## Run concurrency tests repeatedly under the race detector
 
 # --- Web ----------------------------------------------------------------------
 
-# TODO (Svelte): add a _lint-web helper (svelte-check, prettier/eslint) and run it here.
-check-web: ## Web static checks: API bindings up to date
+check-web: ## Web static checks: API bindings up to date, svelte-check, Prettier, ESLint
 	$(STAGE)
-	@$(MAKE) -k _bindings-check
+	@$(MAKE) -k _bindings-check _lint-web
+
+_lint-web: # Type-check (svelte-check), then formatting (Prettier) and lint (ESLint); fix with npm run format
+	@npm --prefix $(WEB_DIR) run check --silent
+	@npm --prefix $(WEB_DIR) run lint --silent
+	@echo "lint-web: ok"
 
 _openapi: # Generate the OpenAPI spec
 	@$(GO_TOOL) swag init --v3.1 --outputTypes yaml -g $(API_INFO_PATH) -o $(TMP_DIR) --quiet
 
-bindings: _openapi ## Regenerate web/src/schema.ts from the API annotations
+bindings: _openapi ## Regenerate web/src/api/schema.ts from the API annotations
 	@npx --prefix $(WEB_DIR) --no-install openapi-typescript $(TMP_DIR)/swagger.yaml -o $(API_SCHEMA_PATH)
 
 _bindings-check: _openapi # Fail if bindings are out of date
