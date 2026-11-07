@@ -23,7 +23,7 @@ COPY internal internal
 COPY web/*.go web/
 COPY --from=web /src/web/dist web/dist
 # For CGO, set CGO_ENABLED=1 and switch the runtime to base-nossl below.
-RUN CGO_ENABLED=0 go build -trimpath -tags embed -ldflags "-s -w -X main.version=${VERSION}" -o /app ./cmd/app
+RUN CGO_ENABLED=0 go build -v -trimpath -tags embed -ldflags "-s -w -X main.version=${VERSION}" -o /app ./cmd/app
 # Empty dir for the SQLite database; distroless has no shell to create it in the final stage.
 RUN mkdir /data
 

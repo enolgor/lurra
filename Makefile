@@ -158,7 +158,7 @@ debug: ## Build the SPA with source maps, then run the API under Delve (headless
 build: ## Compile the binary with the SPA embedded
 	$(STAGE)
 	@npm --prefix $(WEB_DIR) run build
-	@CGO_ENABLED=0 go build -trimpath -tags embed -ldflags "-s -w -X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
+	@CGO_ENABLED=0 go build -v -trimpath -tags embed -ldflags "-s -w -X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
 	@echo "build: ok ($(VERSION))"
 
 docker: ## Build the Docker image
