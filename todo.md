@@ -59,6 +59,16 @@
 - `writeTimeout` must exceed `handlerTimeout` in `server.go`.
 - `make debug` serves the built SPA (with source maps) at `:8080` under Delve; attach with
   "Attach to make debug" (F5) in VS Code. Ctrl+C kills the app without a graceful shutdown.
+- shadcn-svelte copies components into `web/src/lib/components/ui/`; the behavior comes from
+  `bits-ui` (an npm dependency). Run these in `web/` with `npx shadcn-svelte@latest`, then
+  `npm run format` and `git diff` to review and restore your own edits:
+  - `add <name...>` adds components (`-a` for all of them).
+  - `add <name> --overwrite` updates one to the latest upstream version.
+  - `apply <preset>` switches the preset (style, theme, font) and reinstalls the components;
+    `--only theme` or `--only font` changes just that, leaving the components alone.
+  - `init --reinstall` reinstalls all components after a style change.
+
+  CLI docs: https://www.shadcn-svelte.com/docs/cli
 
 ## Stack
 
