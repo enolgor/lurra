@@ -16,6 +16,9 @@ swag → OpenAPI → `web/src/schema.ts`, Vite SPA embedded in the binary.
   `make ci` before finishing. Fix all failures.
 - Never run `docker build`, containers or the app to verify; the user does that.
 - Run `make bindings` after changing API annotations or request/response types.
+  `web/src/api/schema.ts` is generated; never edit it by hand.
+- Fix formatting with `gofmt -w .` (Go) and `npm --prefix web run format` (web); make only
+  checks it.
 - Run `make tidy` (not just `go mod tidy`) after dependency changes.
 - Prefer the simplest option; keep Makefile targets few (private helpers start with `_`).
 - Keep this file current: when a new rule, convention or repeated correction appears, propose
