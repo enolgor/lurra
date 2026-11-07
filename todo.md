@@ -23,10 +23,10 @@
 - [x] **Add shadcn-svelte** as the UI component library (with Tailwind, which it requires).
 - [ ] **Add dark mode switching** with `mode-watcher` (light/dark/system). The theme in
       `src/app.css` already has dark colors, enabled by a `.dark` class that nothing sets yet.
-- [ ] **Add frontend tests** with Vitest and `@testing-library/svelte`, replacing the `test-web`
+- [x] **Add frontend tests** with Vitest and `@testing-library/svelte`, replacing the `test-web`
       placeholder in the Makefile.
 - [x] **Add Prettier** (with the Svelte plugin) for `web/` formatting, checked in `_lint-web`.
-- [ ] **Decide on frontend coverage:** Vitest thresholds in `test-web`, or Go-only. State it in
+- [x] **Decide on frontend coverage:** Vitest thresholds in `test-web`, or Go-only. State it in
       `CLAUDE.md` either way. Exclude `src/lib/components/ui/` (copied shadcn-svelte code).
 - [x] **Remove the create-vite demo content:** `src/lib/Counter.svelte`, `src/assets/`, the demo
       `App.svelte`, `web/README.md` and the placeholder icons in `public/`.

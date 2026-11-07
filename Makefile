@@ -5,7 +5,7 @@
 #   test-go     Go tests with the race detector, then coverage thresholds
 #   stress      Concurrency tests, repeatedly, under the race detector
 #   check-web   Web static checks: API bindings up to date, svelte-check, Prettier, ESLint
-#   test-web    Web tests (TODO, with Svelte)
+#   test-web    Web tests (Vitest), then coverage thresholds
 #   bindings    Regenerate web/src/api/schema.ts from the API annotations
 #   tidy        Tidy go.mod/go.sum and tools.mod/tools.sum
 #   security    Vulnerability checks for Go and npm dependencies
@@ -113,10 +113,9 @@ _bindings-check: _openapi # Fail if bindings are out of date
 	@diff -u $(API_SCHEMA_PATH) $(TMP_DIR)/schema.ts || (echo "bindings are stale, run 'make bindings'" && exit 1)
 	@echo "bindings-check: ok"
 
-# TODO (Svelte): run the web tests (e.g. npm --prefix $(WEB_DIR) run test with Vitest).
-test-web: ## Web tests (none yet)
+test-web: ## Web tests (Vitest), then coverage thresholds
 	$(STAGE)
-	@echo "test-web: no web tests yet"
+	@npm --prefix $(WEB_DIR) test --silent
 
 # --- Dependencies -------------------------------------------------------------
 
