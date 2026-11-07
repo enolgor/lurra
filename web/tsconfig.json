@@ -9,6 +9,10 @@
 		}
 	],
 	"compilerOptions": {
+		"paths": {
+			"$lib": ["./src/lib"],
+			"$lib/*": ["./src/lib/*"]
+		},
 		"types": ["node"]
 	}
 }

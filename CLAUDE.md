@@ -19,6 +19,8 @@ swag → OpenAPI → `web/src/schema.ts`, Vite SPA embedded in the binary.
   `web/src/api/schema.ts` is generated; never edit it by hand.
 - Fix formatting with `gofmt -w .` (Go) and `npm --prefix web run format` (web); make only
   checks it.
+- Add UI components with `npx shadcn-svelte@latest add <name>` in `web/`, then format: the
+  generated files don't follow Prettier.
 - Run `make tidy` (not just `go mod tidy`) after dependency changes.
 - Prefer the simplest option; keep Makefile targets few (private helpers start with `_`).
 - Keep this file current: when a new rule, convention or repeated correction appears, propose

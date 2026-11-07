@@ -1,4 +1,9 @@
 {
+  // Use the project's TypeScript (web/node_modules) instead of VS Code's bundled one, so the
+  // editor and `make check-web` agree. VS Code asks once to switch; accept it.
+  "js/ts.tsdk.path": "web/node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+
   // Prettier (web/prettier.config.js, printWidth 100): ruler at 100 and format on save.
   // requireConfig keeps it from formatting files outside web/, which have no Prettier config.
   "prettier.requireConfig": true,
@@ -39,6 +44,9 @@
   // ESLint (web/eslint.config.js), including .svelte files.
   "eslint.workingDirectories": ["web"],
   "eslint.validate": ["javascript", "typescript", "svelte"],
+
+  // Tailwind: lets the Tailwind extension handle @import 'tailwindcss' and @theme in CSS.
+  "files.associations": { "*.css": "tailwindcss" },
 
   // Go: gofmt on save (no line limit, so no ruler).
   "[go]": {

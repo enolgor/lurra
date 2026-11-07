@@ -7,6 +7,12 @@
 		"types": ["svelte", "vite/client"],
 		"allowArbitraryExtensions": true,
 		"noEmit": true,
+		// $lib alias, also set in vite.config.ts (SvelteKit provides it automatically; plain Vite does not)
+		"paths": {
+			"$lib": ["./src/lib"],
+			"$lib/*": ["./src/lib/*"]
+		},
+
 		/**
 		 * Typecheck JS in `.svelte` and `.js` files by default.
 		 * Disable checkJs if you'd like to use dynamic types in JS.
