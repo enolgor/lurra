@@ -1,13 +1,16 @@
 # lurra
 
 Go 1.27 todo app template: chi + httplog/slog API, SQLite (ncruces driver, goose migrations),
-swag → OpenAPI → `web/src/schema.ts`, Vite SPA embedded in the binary.
+swag → OpenAPI → `web/src/api/schema.ts`, Svelte 5 SPA embedded in the binary.
 
 ## Layout
 
-- `cmd/app`: wiring only. `internal/config` env/.env, `logging` slog handler, `server` router and
-  middleware, `api` handlers, `httpx` JSON/errors, `model` types, errors and `TodoStore`,
-  `store/sqlite` store and `migrations/`.
+- `cmd/app`: wiring only. `internal/config` env/.env, `logging` slog handler, `server` router,
+  middleware, security headers (CSP) and SPA fallback, `api` handlers, `httpx` JSON/errors,
+  `model` types, errors and `TodoStore`, `store/sqlite` store and `migrations/`.
+- `web/`: Svelte 5 + Vite, no SvelteKit. `src/api/client.ts` the one API client (openapi-fetch),
+  `src/router.ts` routes (sv-router) to pages in `src/routes/`, `src/lib/components/ui/`
+  shadcn-svelte components (copied in; update with the CLI). `web/*.go` serves `dist/`.
 
 ## Workflow
 
