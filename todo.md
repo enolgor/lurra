@@ -9,7 +9,7 @@
       `-race`) and drop `cover` or make it only print the report from that profile.
 - [x] **Pin Node** with `devEngines.runtime` in `web/package.json`, using `"onFail": "error"`.
       Renovate then picks it up, so check its first Node PR stays on LTS.
-- [ ] **Add an index.html fallback for the SPA** once the Svelte version has client-side routes.
+- [x] **Add an index.html fallback for the SPA** once the Svelte version has client-side routes.
       Test that an unknown route (`/todos/1`) returns `index.html` with 200, a real asset returns
       the file, a missing asset (`/assets/nope.js`) returns 404, and an unknown API route
       (`/api/v1/nope`) returns 404, not the SPA.
@@ -19,7 +19,7 @@
       Makefile, so `check-web` and `ci` run it.
 - [ ] **Add an ICU message format i18n library** for Svelte (plurals, gender, etc.). Check how it
       fits with Tolgee from the stack list.
-- [ ] **Add a client-side routing library** for Svelte. It needs the index.html fallback above.
+- [x] **Add a client-side routing library** for Svelte. It needs the index.html fallback above.
 - [x] **Add shadcn-svelte** as the UI component library (with Tailwind, which it requires).
 - [ ] **Add dark mode switching** with `mode-watcher` (light/dark/system). The theme in
       `src/app.css` already has dark colors, enabled by a `.dark` class that nothing sets yet.
@@ -32,13 +32,13 @@
       `App.svelte`, `web/README.md` and the placeholder icons in `public/`.
 - [ ] **Describe `web/` in `CLAUDE.md`'s Layout:** Svelte 5 + Vite, API client in `src/api/`, and
       `make check-web test-web` after web changes.
-- [ ] **Add cache headers for the SPA:** `Cache-Control: public, max-age=31536000, immutable` for
+- [x] **Add cache headers for the SPA:** `Cache-Control: public, max-age=31536000, immutable` for
       hashed `/assets/*`, `no-cache` for `index.html`. Embedded files have no modtime, so
       `http.FileServer` sends no `Last-Modified` and browsers can't revalidate them.
-- [ ] **Add security headers** (chi middleware): at least `X-Content-Type-Options: nosniff` and a
+- [x] **Add security headers** (chi middleware): at least `X-Content-Type-Options: nosniff` and a
       Content Security Policy for the SPA.
-- [ ] **Add a shared API client** (`src/api/client.ts`, `openapi-fetch` with `baseUrl: "/api/v1"`),
-      showing errors with their `request_id`. Decide on TanStack Query (see Stack).
+- [x] **Add a shared API client** (`src/api/client.ts`, `openapi-fetch` with `baseUrl: "/api/v1"`),
+      showing errors with their `request_id`.
 
 
 ## Good to know
@@ -69,6 +69,10 @@
   - `init --reinstall` reinstalls all components after a style change.
 
   CLI docs: https://www.shadcn-svelte.com/docs/cli
+- The Content Security Policy (`internal/server/headers.go`) only allows the app's own
+  files. Loading anything from another origin (CDN, analytics, an external API or OIDC
+  provider) needs it added there. `make dev` serves through Vite without the CSP, so check
+  CSP problems with `make debug` or the built binary.
 
 ## Stack
 
@@ -84,4 +88,4 @@
  - [x] embed dist + serve (serving from disk, embed pending)
  - [ ] jwt chi + oidc for auth
  - [ ] tolgee for translations
- - [ ] openapi-fetch and https://github.com/tanstack/query (svelte) (maybe) (openapi-fetch done, query pending)
+ - [x] openapi-fetch

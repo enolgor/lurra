@@ -13,6 +13,7 @@ import (
 	"github.com/enolgor/lurra/internal/logging"
 	"github.com/enolgor/lurra/internal/server"
 	"github.com/enolgor/lurra/internal/store/sqlite"
+	"github.com/enolgor/lurra/web"
 )
 
 // version is set at build time via -ldflags
@@ -44,7 +45,7 @@ func main() {
 	}
 	c := api.New(store)
 
-	srv := server.New(cfg.Port, logger, c)
+	srv := server.New(cfg.Port, logger, c, web.Dist())
 	slog.Info("listening", "addr", srv.Addr)
 	errCh := make(chan error, 1)
 	go func() { errCh <- srv.ListenAndServe() }()

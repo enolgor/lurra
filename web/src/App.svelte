@@ -1,13 +1,10 @@
 <script lang="ts">
 	import './app.css';
-	import { Button } from '$lib/components/ui/button/index.js';
-
-	let a = $state('this is a test');
-
-	$effect(() => {
-		console.log('a is', a);
-	});
+	import { Router } from 'sv-router';
+	import { route } from './router';
 </script>
 
 <h1>lurra</h1>
-<Button>Click me</Button>
+<!-- a template literal, so Svelte adds no `?? ''` branch that tests could never cover -->
+<p>{`you are in route: ${route.pathname}`}</p>
+<Router />
