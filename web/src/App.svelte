@@ -16,7 +16,7 @@
 <!-- for keyboard users: hidden until focused with Tab, skips past the header -->
 <a
 	href="#main"
-	class="btn sr-only focus:not-sr-only focus:absolute focus:start-2 focus:top-2 focus:z-50"
+	class="btn sr-only focus:not-sr-only focus:absolute focus:inset-s-2 focus:top-2 focus:z-50"
 >
 	{m.skip_to_content()}
 </a>

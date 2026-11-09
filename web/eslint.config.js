@@ -2,6 +2,7 @@ import prettier from 'eslint-config-prettier';
 import path from 'node:path';
 import js from '@eslint/js';
 import paraglide from '@inlang/paraglide-js/eslint';
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import svelte from 'eslint-plugin-svelte';
 import { defineConfig, includeIgnoreFile } from 'eslint/config';
 import globals from 'globals';
@@ -51,6 +52,18 @@ export default defineConfig(
 		plugins: { paraglide },
 		rules: {
 			'paraglide/no-dynamic-message-access': ['error', { messageModuleDirectories: ['paraglide'] }]
+		}
+	},
+	{
+		// Tailwind class checks as errors: canonical names (the editor's suggestCanonicalClasses),
+		// unknown, conflicting, duplicate and deprecated classes. Class order and line wrapping are
+		// Prettier's job (prettier-plugin-tailwindcss), so those two rules are off.
+		files: ['src/**/*.svelte', 'src/**/*.ts'],
+		extends: [betterTailwindcss.configs['recommended-error']],
+		settings: { 'better-tailwindcss': { entryPoint: 'src/app.css' } },
+		rules: {
+			'better-tailwindcss/enforce-consistent-class-order': 'off',
+			'better-tailwindcss/enforce-consistent-line-wrapping': 'off'
 		}
 	},
 	{
