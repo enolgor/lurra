@@ -5,8 +5,9 @@
 - [ ] **Install the Renovate app** when publishing. The config is in `.github/renovate.json`.
       Check that the onboarding PR detects `tools.mod`.
 - [ ] devcontainers json?
-- [ ] **Add dark mode switching** with `mode-watcher` (light/dark/system). The theme in
-      `src/app.css` already has dark colors, enabled by a `.dark` class that nothing sets yet.
+- [ ] **Add a theme switcher** (light/dark/system) next to the language selector, with daisyUI's
+      `theme-controller`. Dark mode already follows the system (daisyUI's `dark` theme is
+      `--prefersdark`); the switcher only adds a manual choice, remembered for the next visit.
 
 ## Good to know
 
@@ -27,17 +28,6 @@
 - `writeTimeout` must exceed `handlerTimeout` in `server.go`.
 - `make debug` serves the built SPA (with source maps) at `:8080` under Delve; attach with
   "Attach to make debug" (F5) in VS Code. Ctrl+C kills the app without a graceful shutdown.
-- shadcn-svelte copies components into `web/src/lib/components/ui/`; interactive ones get their
-  behavior from `bits-ui`, an npm dependency that `add` installs with the first that needs it.
-  Run these in `web/` with `npx shadcn-svelte@latest`, then `npm run format` and `git diff` to
-  review and restore your own edits:
-  - `add <name...>` adds components (`-a` for all of them).
-  - `add <name> --overwrite` updates one to the latest upstream version.
-  - `apply <preset>` switches the preset (style, theme, font) and reinstalls the components;
-    `--only theme` or `--only font` changes just that, leaving the components alone.
-  - `init --reinstall` reinstalls all components after a style change.
-
-  CLI docs: https://www.shadcn-svelte.com/docs/cli
 - The Content Security Policy (`internal/server/headers.go`) only allows the app's own
   files. Loading anything from another origin (CDN, analytics, an external API or OIDC
   provider) needs it added there. `make dev` serves through Vite without the CSP, so check
@@ -60,15 +50,12 @@
   environment variables. Not part of any check or build.
 - The unused-messages check gives up if any source file in `web/` has a re-export
   (`export { x } from '…'` or `export * from '…'`). Import, then export instead
-  (`import { cn } from 'cn'; export { cn };`, as in `src/lib/utils.ts`).
+  (`import { x } from 'y'; export { x };`).
 - i18n is Paraglide JS with inlang's default message format, in `web/messages/{locale}.json`.
   To add a language, list it in `locales` in `web/project.inlang/settings.json` and add its
   file; the language selector picks it up. The inlang plugins load from `node_modules`
   (`settings.json` `modules`); if a tool writes `https://cdn…` URLs back, revert them, or every
   build downloads them.
-- bits-ui menus (shadcn dropdowns, popovers) stay `visibility: hidden` in tests, because jsdom has
-  no layout: query their contents with `{ hidden: true }`, find items by text, and wait for a
-  closing menu to be removed before clicking again (see `LanguageSelector.test.ts`).
 
 ## Stack
 

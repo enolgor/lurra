@@ -9,8 +9,8 @@ swag → OpenAPI → `web/src/api/schema.ts`, Svelte 5 SPA embedded in the binar
   middleware, security headers (CSP) and SPA fallback, `api` handlers, `httpx` JSON/errors,
   `model` types, errors and `TodoStore`, `store/sqlite` store and `migrations/`.
 - `web/`: Svelte 5 + Vite, no SvelteKit. `src/api/client.ts` the one API client (openapi-fetch),
-  `src/router.ts` routes (sv-router) to pages in `src/routes/`, `src/lib/components/ui/`
-  shadcn-svelte components (copied in; update with the CLI). `web/*.go` serves `dist/`.
+  `src/router.ts` routes (sv-router) to pages in `src/routes/`, own components in
+  `src/lib/components/`, i18n in `src/lib/i18n.svelte.ts`. `web/*.go` serves `dist/`.
 
 ## Workflow
 
@@ -30,8 +30,9 @@ swag → OpenAPI → `web/src/api/schema.ts`, Svelte 5 SPA embedded in the binar
   Check with `make check-i18n` (strict, part of `make ci`: no PR merges untranslated).
 - Fix formatting with `gofmt -w .` (Go) and `npm --prefix web run format` (web); make only
   checks it.
-- Add UI components with `npx shadcn-svelte@latest add <name>` in `web/`, then format: the
-  generated files don't follow Prettier.
+- UI is daisyUI (Tailwind plugin, classes only; use the daisyui skill): plain HTML with daisyUI
+  classes and theme colors (`bg-base-100`, `text-base-content`), no `dark:` and no UI component
+  library.
 - Run `make tidy` (not just `go mod tidy`) after dependency changes.
 - Prefer the simplest option; keep Makefile targets few (private helpers start with `_`).
 - Keep this file current: when a new rule, convention or repeated correction appears, propose
@@ -44,8 +45,7 @@ swag → OpenAPI → `web/src/api/schema.ts`, Svelte 5 SPA embedded in the binar
   Plain `if err != nil { return ..., err }` bodies are excluded automatically.
 - Web coverage is also 100% (Vitest, `make test-web`). Tests sit next to the code as
   `*.test.ts` (Testing Library); skip a branch with `/* v8 ignore next -- <reason> */`.
-  `src/lib/components/ui/`, `src/api/schema.ts`, `src/paraglide/` and `src/main.ts` are
-  excluded in `vite.config.ts`.
+  `src/api/schema.ts`, `src/paraglide/` and `src/main.ts` are excluded in `vite.config.ts`.
 - Test behavior, not just lines: new features get tests for their intended behavior and edge
   cases, and bug fixes get a regression test, even when coverage is already 100%.
 - New packages need tests or an exclude in `.testcoverage.yml`.

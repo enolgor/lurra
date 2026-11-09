@@ -10,3 +10,6 @@ globalThis.IntersectionObserver ??= class {
 		return [];
 	}
 } as unknown as typeof IntersectionObserver;
+
+// jsdom's scrollTo only logs "Not implemented"; sv-router scrolls to the top on navigation.
+window.scrollTo = () => {};
