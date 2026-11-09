@@ -10,7 +10,8 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
   `model` types, errors and `TodoStore`, `store/sqlite` store and `migrations/`.
 - `web/`: Svelte 5 + Vite, no SvelteKit. `src/lib/api/client.ts` the one API client (openapi-fetch),
   `src/router.ts` routes (sv-router) to pages in `src/routes/`, own components in
-  `src/lib/components/`, i18n in `src/lib/i18n.svelte.ts`. `web/*.go` serves `dist/`.
+  `src/lib/components/` (menus build on `Dropdown.svelte`), i18n in `src/lib/i18n.svelte.ts`,
+  light/dark in `src/lib/theme.svelte.ts` (+ `public/theme.js`). `web/*.go` serves `dist/`.
 
 ## Workflow
 
@@ -37,6 +38,8 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
   library.
 - Run `make tidy` (not just `go mod tidy`) after dependency changes.
 - Prefer the simplest option; keep Makefile targets few (private helpers start with `_`).
+- Don't repeat logic: when a change would copy behavior that already exists (a component, a
+  helper, a test setup), propose extracting it into one shared place, and ask before doing it.
 - Keep this file current: when a new rule, convention or repeated correction appears, propose
   adding it here, in as few words as possible.
 

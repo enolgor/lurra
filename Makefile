@@ -106,7 +106,10 @@ _lint-web: # Type-check (svelte-check), then formatting (Prettier) and lint (ESL
 
 check-i18n: ## Translation checks: missing, empty or broken translations, unused messages
 	$(STAGE)
-	@npm --prefix $(WEB_DIR) run i18n:check --silent
+	@# inlang exits 0 when a check can't run (e.g. unused messages after a re-export); fail on that too
+	@out=$$(npm --prefix $(WEB_DIR) run i18n:check --silent 2>&1); status=$$?; echo "$$out"; \
+	[ $$status -eq 0 ] || exit $$status; \
+	! echo "$$out" | grep -qE 'incomplete|not checked' || { echo "check-i18n: a check could not run, see above"; exit 1; }
 
 translate: ## Machine-translate messages from en into the other locales (your own provider)
 	@npm --prefix $(WEB_DIR) run i18n:translate --silent

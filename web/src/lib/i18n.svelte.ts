@@ -24,7 +24,8 @@ export function detectLocale(): Locale {
 	return extractLocaleFromNavigator() ?? baseLocale;
 }
 
-let current = $state(detectLocale());
+const initial = detectLocale();
+let current = $state(initial);
 
 /** Sets <html lang> and dir, for screen readers, hyphenation and right-to-left languages. */
 function updateDocument(locale: Locale) {
@@ -42,4 +43,4 @@ overwriteSetLocale((locale) => {
 		// storage blocked: the choice lasts until the page is reloaded
 	}
 });
-updateDocument(current);
+updateDocument(initial);

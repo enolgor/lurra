@@ -43,32 +43,3 @@ test('switches the language live and closes when picking a locale', async () => 
 	expect(option('Español')).toHaveAttribute('aria-current', 'true');
 	expect(option('English')).toHaveAttribute('aria-current', 'false');
 });
-
-test('closes on a click outside, but not on a click inside', async () => {
-	const user = userEvent.setup();
-	render(LanguageSelector);
-
-	await user.click(trigger());
-	await user.click(screen.getByText('Select language'));
-	expect(dropdown()).toHaveAttribute('open');
-
-	await user.click(document.body);
-	expect(dropdown()).not.toHaveAttribute('open');
-});
-
-test('closes on Escape and gives focus back to the trigger, ignoring other keys', async () => {
-	const user = userEvent.setup();
-	render(LanguageSelector);
-
-	// closed: Escape does nothing (focus stays where it is)
-	await user.keyboard('{Escape}');
-	expect(trigger()).not.toHaveFocus();
-
-	await user.click(trigger());
-	await user.keyboard('a');
-	expect(dropdown()).toHaveAttribute('open');
-
-	await user.keyboard('{Escape}');
-	expect(dropdown()).not.toHaveAttribute('open');
-	expect(trigger()).toHaveFocus();
-});

@@ -4,5 +4,9 @@
 	"myname": "Mein Name ist {name}",
 	"language_selector_trigger": "Sprache",
 	"language_selector_label": "Sprache auswählen",
-	"current_route": "du bist auf der Route: {path}"
+	"current_route": "du bist auf der Route: {path}",
+	"theme_selector_label": "Design",
+	"theme_light": "Hell",
+	"theme_dark": "Dunkel",
+	"theme_system": "System"
 }

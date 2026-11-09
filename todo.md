@@ -11,9 +11,6 @@
       section. Drop the notes that repeat `CLAUDE.md` (migrations, `api.writeError`,
       `slog.*Context`, `make tidy`, Dockerfile `COPY` lines) or point to it, so each fact lives in
       one place.
-- [ ] **Add a theme switcher** (light/dark/system) next to the language selector, with daisyUI's
-      `theme-controller`. Dark mode already follows the system (daisyUI's `dark` theme is
-      `--prefersdark`); the switcher only adds a manual choice, remembered for the next visit.
 
 ## Good to know
 
@@ -54,14 +51,19 @@
   locales and writes their files (`de.json`, …); review the diff and run `make check-i18n`. It
   uses your own provider (Google Translate, DeepL or OpenAI), set through the inlang CLI's
   environment variables. Not part of any check or build.
-- The unused-messages check gives up if any source file in `web/` has a re-export
-  (`export { x } from '…'` or `export * from '…'`). Import, then export instead
-  (`import { x } from 'y'; export { x };`).
+- The unused-messages check can't run if any source file in `web/` has a re-export
+  (`export { x } from '…'` or `export * from '…'`) or dynamic code (`new Function`, `eval`), and
+  `make check-i18n` then fails with "a check could not run". Import, then export instead
+  (`import { x } from 'y'; export { x };`), and avoid dynamic code.
 - i18n is Paraglide JS with inlang's default message format, in `web/messages/{locale}.json`.
   To add a language, list it in `locales` in `web/project.inlang/settings.json` and add its
   file; the language selector picks it up. The inlang plugins load from `node_modules`
   (`settings.json` `modules`); if a tool writes `https://cdn…` URLs back, revert them, or every
   build downloads them.
+- Theme: daisyUI's `light`/`dark` themes, chosen by `data-theme` on `<html>`; without it, dark
+  follows the system. `src/lib/theme.svelte.ts` saves the choice in `localStorage` under the
+  `theme` key, and `public/theme.js` (a plain `<script>` in `index.html`, allowed by the CSP)
+  applies it before the first paint. Keep the key in sync; a test checks both use it.
 
 ## Stack
 
