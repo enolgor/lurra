@@ -173,7 +173,7 @@ docker: ## Build the Docker image
 	@docker build --build-arg GO_VERSION=$(GO_VERSION) --build-arg NODE_VERSION=$(NODE_VERSION) --build-arg VERSION=$(VERSION) -t $(IMAGE_NAME):$(VERSION) .
 
 clean: ## Remove build artifacts
-	@rm -rf $(BIN_DIR) $(TMP_DIR) $(WEB_DIR)/dist
+	@rm -rf $(BIN_DIR) $(TMP_DIR) $(WEB_DIR)/dist $(WEB_DIR)/src/paraglide
 	@echo "clean: ok"
 
 # --- CI -----------------------------------------------------------------------

@@ -18,7 +18,7 @@ export default defineConfig({
 		svelte(),
 		svelteTesting()
 	],
-	// $lib alias, also set in tsconfig.json and tsconfig.app.json
+	// $lib alias, also set in tsconfig.app.json
 	resolve: {
 		alias: { $lib: path.resolve('./src/lib') }
 	},

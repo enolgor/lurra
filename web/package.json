@@ -44,10 +44,12 @@
 		"eslint-plugin-svelte": "^3.19.0",
 		"globals": "^17.6.0",
 		"jsdom": "^29.1.1",
+		"openapi-fetch": "^0.17.0",
 		"openapi-typescript": "^7.13.0",
 		"prettier": "^3.8.3",
 		"prettier-plugin-svelte": "^4.1.0",
 		"prettier-plugin-tailwindcss": "^0.8.0",
+		"sv-router": "^0.19.0",
 		"svelte": "^5.57.3",
 		"svelte-check": "^4.7.7",
 		"tailwindcss": "^4.3.0",
@@ -55,9 +57,5 @@
 		"typescript-eslint": "^8.60.1",
 		"vite": "^8.3.6",
 		"vitest": "^5.1.0"
-	},
-	"dependencies": {
-		"openapi-fetch": "^0.17.0",
-		"sv-router": "^0.19.0"
 	}
 }

@@ -7,12 +7,5 @@
 		{
 			"path": "./tsconfig.node.json"
 		}
-	],
-	"compilerOptions": {
-		"paths": {
-			"$lib": ["./src/lib"],
-			"$lib/*": ["./src/lib/*"]
-		},
-		"types": ["node"]
-	}
+	]
 }
