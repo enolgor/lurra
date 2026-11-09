@@ -67,6 +67,17 @@
 - Hashed `/assets/*` are cached forever; `index.html` and other files get `no-cache`. Embedded
   files have no modtime, so there is no `Last-Modified` and `index.html` is downloaded again on
   every load (it's tiny).
+- `make check-i18n` runs `inlang check` strictly, as part of `make ci`: a missing, empty or
+  broken translation, or a message no code uses, fails it. To loosen it, change the `i18n:check`
+  script in `web/package.json`: `--no-fail` reports without failing, listed check flags (such as
+  `--missing-variables`) run only those, and `--locales de` limits the locales.
+- `make translate` machine-translates the messages in `web/messages/en.json` into the other
+  locales and writes their files (`de.json`, …); review the diff and run `make check-i18n`. It
+  uses your own provider (Google Translate, DeepL or OpenAI), set through the inlang CLI's
+  environment variables. Not part of any check or build.
+- The unused-messages check gives up if any source file in `web/` has a re-export
+  (`export { x } from '…'` or `export * from '…'`). Import, then export instead
+  (`import { cn } from 'cn'; export { cn };`, as in `src/lib/utils.ts`).
 
 ## Stack
 

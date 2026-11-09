@@ -5,6 +5,8 @@
 #   test-go     Go tests with the race detector, then coverage thresholds
 #   stress      Concurrency tests, repeatedly, under the race detector
 #   check-web   Web static checks: API bindings up to date, svelte-check, Prettier, ESLint
+#   check-i18n  Translation checks: missing, empty or broken translations, unused messages
+#   translate   Machine-translate messages from en into the other locales (your own provider)
 #   test-web    Web tests (Vitest), then coverage thresholds
 #   bindings    Regenerate web/src/api/schema.ts from the API annotations
 #   tidy        Tidy go.mod/go.sum and tools.mod/tools.sum
@@ -14,7 +16,7 @@
 #   build       Compile the binary with the SPA embedded
 #   docker      Build the Docker image
 #   clean       Remove build artifacts
-#   ci          Everything the PR checks run: check-go check-web test-go test-web build
+#   ci          Everything the PR checks run: check-go check-web check-i18n test-go test-web build
 #
 # Targets starting with _ are helpers: hidden from help, but callable (e.g. `make _lint`).
 
@@ -22,7 +24,7 @@
 MAKEFLAGS += --no-print-directory
 .PHONY: help _check-env setup \
 	check-go _fmt-check _tidy-check _lint test-go stress \
-	check-web _bindings-check _lint-web _openapi bindings test-web \
+	check-web _bindings-check _lint-web check-i18n translate _openapi bindings test-web \
 	tidy security _vuln _audit \
 	dev _dev-api _dev-web debug \
 	build docker clean ci
@@ -102,6 +104,13 @@ _lint-web: # Type-check (svelte-check), then formatting (Prettier) and lint (ESL
 	@npm --prefix $(WEB_DIR) run lint --silent
 	@echo "lint-web: ok"
 
+check-i18n: ## Translation checks: missing, empty or broken translations, unused messages
+	$(STAGE)
+	@npm --prefix $(WEB_DIR) run i18n:check --silent
+
+translate: ## Machine-translate messages from en into the other locales (your own provider)
+	@npm --prefix $(WEB_DIR) run i18n:translate --silent
+
 _openapi: # Generate the OpenAPI spec
 	@$(GO_TOOL) swag init --v3.1 --outputTypes yaml -g $(API_INFO_PATH) -o $(TMP_DIR) --quiet
 
@@ -169,5 +178,5 @@ clean: ## Remove build artifacts
 
 # --- CI -----------------------------------------------------------------------
 
-# Keep in sync with the PR check jobs (security runs separately).
-ci: check-go check-web test-go test-web build ## Everything the PR checks run
+# Keep in sync with the mandatory PR check jobs (security runs separately).
+ci: check-go check-web check-i18n test-go test-web build ## Everything the PR checks run
