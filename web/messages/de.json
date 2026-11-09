@@ -4,9 +4,14 @@
 	"myname": "Mein Name ist {name}",
 	"language_selector_trigger": "Sprache",
 	"language_selector_label": "Sprache auswählen",
-	"current_route": "du bist auf der Route: {path}",
 	"theme_selector_label": "Design",
 	"theme_light": "Hell",
 	"theme_dark": "Dunkel",
-	"theme_system": "System"
+	"theme_system": "System",
+	"skip_to_content": "Zum Inhalt springen",
+	"home_title": "Aufgaben",
+	"app_title": "Aufgaben",
+	"footer_note": "Eine Beispiel-App, erstellt mit der",
+	"nav_home": "Startseite",
+	"footer_link": "Projektvorlage lurra"
 }

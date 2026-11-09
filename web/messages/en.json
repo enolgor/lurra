@@ -4,9 +4,14 @@
 	"myname": "My name is {name}",
 	"language_selector_trigger": "Language",
 	"language_selector_label": "Select language",
-	"current_route": "you are in route: {path}",
 	"theme_selector_label": "Theme",
 	"theme_light": "Light",
 	"theme_dark": "Dark",
-	"theme_system": "System"
+	"theme_system": "System",
+	"skip_to_content": "Skip to content",
+	"home_title": "Todos",
+	"app_title": "Todos",
+	"footer_note": "An example app built with the",
+	"nav_home": "Home",
+	"footer_link": "lurra project template"
 }
