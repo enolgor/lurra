@@ -1,5 +1,7 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"example_message": "Guten Tag {username}",
-	"myname": "Mein Name ist {name}"
+	"myname": "Mein Name ist {name}",
+	"language_selector_trigger": "Sprache",
+	"language_selector_label": "Sprache auswählen"
 }

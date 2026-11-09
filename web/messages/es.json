@@ -1,5 +1,7 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"example_message": "Hola mundo {username}",
-	"myname": "Me llamo {name}"
+	"myname": "Me llamo {name}",
+	"language_selector_trigger": "Idioma",
+	"language_selector_label": "Seleccionar idioma"
 }
