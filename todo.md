@@ -5,6 +5,12 @@
 - [ ] **Install the Renovate app** when publishing. The config is in `.github/renovate.json`.
       Check that the onboarding PR detects `tools.mod`.
 - [ ] devcontainers json?
+- [ ] **Write the README** once the template is done, and merge this file into it. One README
+      with everything: what the template is, requirements (Go, Node), quick start
+      (`make setup`, `make dev`), the existing "Before deploying" notes, and this "Good to know"
+      section. Drop the notes that repeat `CLAUDE.md` (migrations, `api.writeError`,
+      `slog.*Context`, `make tidy`, Dockerfile `COPY` lines) or point to it, so each fact lives in
+      one place.
 - [ ] **Add a theme switcher** (light/dark/system) next to the language selector, with daisyUI's
       `theme-controller`. Dark mode already follows the system (daisyUI's `dark` theme is
       `--prefersdark`); the switcher only adds a manual choice, remembered for the next visit.

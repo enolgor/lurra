@@ -55,3 +55,27 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
 - New domain errors need a case in `api.writeError`, otherwise they become a 500.
 - Log with `slog.*Context(ctx, ...)` so lines carry `request_id`.
 - New Go source dirs must be added to the Dockerfile's explicit `COPY` lines.
+
+## Audits
+
+When asked for an audit, change nothing: read (never install, format or delete), then report
+findings grouped as *should fix*, *needs a decision* and *optional*, plus what was checked and
+found fine, and wait for which ones to fix. Run `make ci` first; then check:
+
+- **Dependencies:** every npm, `go.mod` and `tools.mod` entry is used (code, config, scripts,
+  Makefile); nothing is duplicated or in the wrong section (all npm deps are dev); `npm ls` and
+  the lockfiles agree; `make security` advisories are known.
+- **Leftovers:** dead files, empty dirs, unused exports or components, commented-out code,
+  `TODO`/`FIXME`, demo content, config or comments for removed tools.
+- **Generated code:** only in its known places (`schema.ts`, `src/lib/paraglide/`, `dist/`),
+  ignored by Prettier, ESLint, coverage and `.dockerignore`, untracked unless meant to be.
+- **Consistency:** the same thing is named and done the same way everywhere (imports via `$lib`,
+  messages via `m.key()`, theme colors, test style, comment style, file names); every path in a
+  config, comment or doc exists; the Makefile summary, `make help` and `.PHONY` list the same
+  targets; the Dockerfile copies every Go dir.
+- **Config:** no dead or duplicated settings (aliases, excludes, ignores), each setting in the one
+  place that reads it, and comments that match what the setting does.
+- **Docs:** `CLAUDE.md`, `todo.md` and code comments describe the code as it is now.
+- **Tests:** behavior is tested, not just lines; every coverage exclude and ignore comment still
+  has a valid reason; no skipped tests or leftover debug output.
+- **Git:** no tracked file that should be ignored, nothing ignored that should be tracked.
