@@ -5,23 +5,6 @@
 - [ ] **Install the Renovate app** when publishing. The config is in `.github/renovate.json`.
       Check that the onboarding PR detects `tools.mod`.
 - [ ] devcontainers json?
-- [ ] **Add i18n with Paraglide JS** (`@inlang/paraglide-js`, Vite plugin) and the ICU plugin
-      (`@inlang/plugin-icu1`), so messages are standard ICU MessageFormat JSON (plurals, select)
-      that any translation tool can sync. Not tied to one vendor.
-      - `web/messages/en.json` is the master, edited by hand; Paraglide types `m.key()` from it.
-      - Other languages sit next to it, written by `make pull-translations` and committed.
-      - Exclude Paraglide's generated output from lint, Prettier and coverage.
-- [ ] **Add `make push-translations` and `make pull-translations`.** Push uploads `en.json`, pull
-      writes every other language (never `en.json`). Both run commands from Makefile variables
-      (`TRANSLATIONS_PUSH`, `TRANSLATIONS_PULL`), Tolgee CLI by default; swap them for another
-      tool. `make build` does not pull: builds need no network or credentials.
-- [ ] **Add a translations workflow** that runs `make pull-translations` and opens a PR with the
-      changes, reusing the open one (`peter-evans/create-pull-request`, fixed branch such as
-      `translations/update`; no PR when nothing changed). Trigger it on `schedule` (daily) and
-      `workflow_dispatch`, which works with any translation tool. Optionally add
-      `repository_dispatch` for tools that can call it: most translation-tool webhooks can't send
-      GitHub's required body and auth header without a relay. Needs the tool's API key as a repo
-      secret, and the PR must trigger CI (a PAT or GitHub App token, not `GITHUB_TOKEN`).
 - [ ] **Add dark mode switching** with `mode-watcher` (light/dark/system). The theme in
       `src/app.css` already has dark colors, enabled by a `.dark` class that nothing sets yet.
 
@@ -78,6 +61,14 @@
 - The unused-messages check gives up if any source file in `web/` has a re-export
   (`export { x } from '…'` or `export * from '…'`). Import, then export instead
   (`import { cn } from 'cn'; export { cn };`, as in `src/lib/utils.ts`).
+- i18n is Paraglide JS with inlang's default message format, in `web/messages/{locale}.json`.
+  To add a language, list it in `locales` in `web/project.inlang/settings.json` and add its
+  file; the language selector picks it up. The inlang plugins load from `node_modules`
+  (`settings.json` `modules`); if a tool writes `https://cdn…` URLs back, revert them, or every
+  build downloads them.
+- bits-ui menus (shadcn dropdowns, popovers) stay `visibility: hidden` in tests, because jsdom has
+  no layout: query their contents with `{ hidden: true }`, find items by text, and wait for a
+  closing menu to be removed before clicking again (see `LanguageSelector.test.ts`).
 
 ## Stack
 
@@ -92,5 +83,5 @@
  - [x] air + vite/proxy for live-reload (vite proxy done, air pending)
  - [x] embed dist + serve (serving from disk, embed pending)
  - [ ] jwt chi + oidc for auth
- - [ ] tolgee for translations
+ - [ ] paraglide / inlang for translations
  - [x] openapi-fetch

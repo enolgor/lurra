@@ -2,6 +2,7 @@
 	import './app.css';
 	import { Router } from 'sv-router';
 	import LanguageSelector from '$lib/components/LanguageSelector.svelte';
+	import { m } from './paraglide/messages.js';
 	import { route } from './router';
 </script>
 
@@ -9,6 +10,5 @@
 	<LanguageSelector />
 </header>
 <h1>lurra</h1>
-<!-- a template literal, so Svelte adds no `?? ''` branch that tests could never cover -->
-<p>{`you are in route: ${route.pathname}`}</p>
+<p>{m.current_route({ path: route.pathname })}</p>
 <Router />

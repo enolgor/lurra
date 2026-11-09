@@ -3,5 +3,6 @@
 	"example_message": "Guten Tag {username}",
 	"myname": "Mein Name ist {name}",
 	"language_selector_trigger": "Sprache",
-	"language_selector_label": "Sprache auswählen"
+	"language_selector_label": "Sprache auswählen",
+	"current_route": "du bist auf der Route: {path}"
 }

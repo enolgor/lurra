@@ -42,6 +42,8 @@ test('switches the language live when picking a locale', async () => {
 
 	// no reload: the trigger re-renders in Spanish
 	expect(await screen.findByRole('button', { name: 'Idioma' })).toBeInTheDocument();
+	// reopen only once the old menu is gone: until then the page has pointer-events: none
+	await waitFor(() => expect(screen.queryByRole('menu', inMenu)).not.toBeInTheDocument());
 	await user.click(screen.getByRole('button', { name: 'Idioma' }));
 	expect(screen.getByText('Seleccionar idioma')).toBeInTheDocument();
 	expect(item('Español')).toHaveAttribute('aria-checked', 'true');
