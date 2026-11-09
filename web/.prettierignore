@@ -7,6 +7,6 @@ bun.lockb
 
 # Build output and generated files
 dist/
-src/api/schema.ts
-src/paraglide/
+src/lib/api/schema.ts
+src/lib/paraglide/
 project.inlang/

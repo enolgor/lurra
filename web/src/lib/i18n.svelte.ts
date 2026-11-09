@@ -10,7 +10,7 @@ import {
 	overwriteGetLocale,
 	overwriteSetLocale,
 	type Locale
-} from '../paraglide/runtime.js';
+} from '$lib/paraglide/runtime.js';
 
 /** The saved choice, else the browser's preferred languages, else the base locale (en). */
 export function detectLocale(): Locale {

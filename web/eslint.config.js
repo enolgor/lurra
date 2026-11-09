@@ -13,8 +13,8 @@ const gitignorePath = path.resolve(import.meta.dirname, '../.gitignore');
 
 export default defineConfig(
 	includeIgnoreFile(gitignorePath),
-	// generated: schema.ts by `make bindings`, src/paraglide/ by the Paraglide Vite plugin
-	{ ignores: ['src/api/schema.ts', 'src/paraglide/**'] },
+	// generated: schema.ts by `make bindings`, src/lib/paraglide/ by the Paraglide Vite plugin
+	{ ignores: ['src/lib/api/schema.ts', 'src/lib/paraglide/**'] },
 	js.configs.recommended,
 	ts.configs.recommended,
 	svelte.configs.recommended,

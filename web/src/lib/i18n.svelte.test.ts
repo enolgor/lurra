@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import { getLocale, localStorageKey, setLocale } from '../paraglide/runtime.js';
-import { m } from '../paraglide/messages.js';
+import { getLocale, localStorageKey, setLocale } from '$lib/paraglide/runtime.js';
+import { m } from '$lib/paraglide/messages.js';
 import { detectLocale } from './i18n.svelte';
 
 const blockStorage = (method: 'getItem' | 'setItem') =>

@@ -2,8 +2,8 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import LanguagesIcon from '@lucide/svelte/icons/languages';
 	import { localeFlag, localeName } from '$lib/locale';
-	import { m } from '../../paraglide/messages.js';
-	import { getLocale, locales, setLocale, type Locale } from '../../paraglide/runtime.js';
+	import { m } from '$lib/paraglide/messages.js';
+	import { getLocale, locales, setLocale, type Locale } from '$lib/paraglide/runtime.js';
 
 	// A native <details> dropdown (daisyUI): it opens and closes on its own, but not on an outside
 	// click or Escape, so those are handled below.

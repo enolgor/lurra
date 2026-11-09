@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { afterEach, expect, test } from 'vitest';
 import '$lib/i18n.svelte';
-import { setLocale } from '../../paraglide/runtime.js';
+import { setLocale } from '$lib/paraglide/runtime.js';
 import LanguageSelector from './LanguageSelector.svelte';
 
 const dropdown = () => document.querySelector('details')!;

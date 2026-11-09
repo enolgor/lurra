@@ -25,5 +25,5 @@
 	},
 	"include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
 	// Paraglide's server runtime (Node's async_hooks); this browser-only app never imports it
-	"exclude": ["src/paraglide/server.js"]
+	"exclude": ["src/lib/paraglide/server.js"]
 }

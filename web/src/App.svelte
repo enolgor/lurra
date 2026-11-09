@@ -2,7 +2,7 @@
 	import './app.css';
 	import { Router } from 'sv-router';
 	import LanguageSelector from '$lib/components/LanguageSelector.svelte';
-	import { m } from './paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages.js';
 	import { route } from './router';
 </script>
 

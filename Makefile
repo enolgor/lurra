@@ -8,7 +8,7 @@
 #   check-i18n  Translation checks: missing, empty or broken translations, unused messages
 #   translate   Machine-translate messages from en into the other locales (your own provider)
 #   test-web    Web tests (Vitest), then coverage thresholds
-#   bindings    Regenerate web/src/api/schema.ts from the API annotations
+#   bindings    Regenerate web/src/lib/api/schema.ts from the API annotations
 #   tidy        Tidy go.mod/go.sum and tools.mod/tools.sum
 #   security    Vulnerability checks for Go and npm dependencies
 #   dev         Run air and vite with live reload
@@ -34,7 +34,7 @@ MAKEFLAGS += --no-print-directory
 TOOLS_MOD       := tools.mod
 GO_TOOL         := go tool -modfile=$(TOOLS_MOD)
 WEB_DIR         := web
-API_SCHEMA_PATH := $(WEB_DIR)/src/api/schema.ts
+API_SCHEMA_PATH := $(WEB_DIR)/src/lib/api/schema.ts
 API_INFO_PATH   := internal/api/api.go
 TMP_DIR         := .tmp
 COVER_PROFILE   := $(TMP_DIR)/cover.out
@@ -114,7 +114,7 @@ translate: ## Machine-translate messages from en into the other locales (your ow
 _openapi: # Generate the OpenAPI spec
 	@$(GO_TOOL) swag init --v3.1 --outputTypes yaml -g $(API_INFO_PATH) -o $(TMP_DIR) --quiet
 
-bindings: _openapi ## Regenerate web/src/api/schema.ts from the API annotations
+bindings: _openapi ## Regenerate web/src/lib/api/schema.ts from the API annotations
 	@npx --prefix $(WEB_DIR) --no-install openapi-typescript $(TMP_DIR)/swagger.yaml -o $(API_SCHEMA_PATH)
 
 _bindings-check: _openapi # Fail if bindings are out of date
@@ -173,7 +173,7 @@ docker: ## Build the Docker image
 	@docker build --build-arg GO_VERSION=$(GO_VERSION) --build-arg NODE_VERSION=$(NODE_VERSION) --build-arg VERSION=$(VERSION) -t $(IMAGE_NAME):$(VERSION) .
 
 clean: ## Remove build artifacts
-	@rm -rf $(BIN_DIR) $(TMP_DIR) $(WEB_DIR)/dist $(WEB_DIR)/src/paraglide
+	@rm -rf $(BIN_DIR) $(TMP_DIR) $(WEB_DIR)/dist $(WEB_DIR)/src/lib/paraglide
 	@echo "clean: ok"
 
 # --- CI -----------------------------------------------------------------------

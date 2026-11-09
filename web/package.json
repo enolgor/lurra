@@ -18,7 +18,7 @@
 		"lint": "prettier --check . && eslint .",
 		"test": "vitest run --coverage",
 		"format": "prettier --write .",
-		"i18n:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
+		"i18n:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide",
 		"i18n:check": "inlang check --project ./project.inlang",
 		"i18n:translate": "inlang machine translate --project ./project.inlang"
 	},
