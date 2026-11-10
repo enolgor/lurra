@@ -1,24 +1,21 @@
 import { render, screen, waitFor, within } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-import createClient from 'openapi-fetch';
 import { searchParams } from 'sv-router';
-import { afterEach, describe, expect, test, vi } from 'vitest';
-import type { paths } from '$lib/api/schema';
+import { afterEach, describe, expect, test } from 'vitest';
+import { json, stubApi } from '$lib/test/api';
 import { TodoList, type Todo } from '$lib/todos.svelte';
 import Home from './Home.svelte';
 
 const milk: Todo = { id: 1, title: 'buy milk', done: false };
 const bread: Todo = { id: 2, title: 'bake bread', done: true };
-const json = (body: unknown, status = 200) => Response.json(body, { status });
 const serverError = { code: 500, message: 'x', request_id: 'host/abc-000001' };
 
 /** Renders the page with an API that answers with the given responses, in order. */
 function setup(...responses: (Response | Promise<Response>)[]) {
-	const fetch = vi.fn<(request: Request) => Promise<Response>>();
-	for (const response of responses) fetch.mockReturnValueOnce(Promise.resolve(response));
-	const todos = new TodoList(createClient<paths>({ baseUrl: 'http://test/api/v1', fetch }));
+	const { client, fetch, request } = stubApi(...responses);
+	const todos = new TodoList(client);
 	render(Home, { todos });
-	return { user: userEvent.setup(), fetch, todos, request: (n: number) => fetch.mock.calls[n][0] };
+	return { user: userEvent.setup(), fetch, todos, request };
 }
 /** A response that arrives when `answer` is called. */
 function later() {

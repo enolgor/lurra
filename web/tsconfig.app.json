@@ -22,7 +22,15 @@
 		 */
 		"allowJs": true,
 		"checkJs": true,
-		"moduleDetection": "force"
+		"moduleDetection": "force",
+
+		// Stricter than `strict`: array[i] and record[key] may be undefined, every path of a
+		// function returns, no switch fallthrough, `override` on overridden members. Unused
+		// variables are left to ESLint (no-unused-vars).
+		"noUncheckedIndexedAccess": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true
 	},
 	"include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
 	// Paraglide's server runtime (Node's async_hooks); this browser-only app never imports it

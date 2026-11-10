@@ -12,7 +12,7 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
   `NotFound`), routed by `src/lib/router.ts` (sv-router). `src/lib/api/client.ts` the one API
   client (openapi-fetch), `src/lib/todos.svelte.ts` the todo list state (`TodoList`), own
   components in `src/lib/components/` (menus build on `Dropdown.svelte`, API errors show through
-  `ApiErrorAlert.svelte`), i18n in `src/lib/i18n.svelte.ts`, light/dark in
+  `ApiErrorAlert.svelte`), shared test helpers in `src/lib/test/` (`stubApi`), i18n in `src/lib/i18n.svelte.ts`, light/dark in
   `src/lib/theme.svelte.ts` (+ `public/theme.js`). `web/*.go` serves `dist/`.
 
 ## Workflow
@@ -52,7 +52,8 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
   Plain `if err != nil { return ..., err }` bodies are excluded automatically.
 - Web coverage is also 100% (Vitest, `make test-web`). Tests sit next to the code as
   `*.test.ts` (Testing Library); skip a branch with `/* v8 ignore next -- <reason> */`.
-  `src/lib/api/schema.ts`, `src/lib/paraglide/` and `src/main.ts` are excluded in `vite.config.ts`.
+  `src/lib/api/schema.ts`, `src/lib/paraglide/`, `src/lib/test/` and `src/main.ts` are excluded in
+  `vite.config.ts`.
 - Test behavior, not just lines: new features get tests for their intended behavior and edge
   cases, and bug fixes get a regression test, even when coverage is already 100%.
 - New packages need tests or an exclude in `.testcoverage.yml`.

@@ -12,7 +12,8 @@ test('sends requests under /api/v1', async () => {
 
 	expect(error).toBeUndefined();
 	expect(data).toEqual([{ id: 1, title: 'buy milk', done: false }]);
-	const req = fetch.mock.calls[0][0] as Request;
+	expect(fetch).toHaveBeenCalledOnce();
+	const req = fetch.mock.calls[0]?.[0] as Request;
 	expect(req.method).toBe('GET');
 	expect(new URL(req.url).pathname).toBe('/api/v1/todos');
 });

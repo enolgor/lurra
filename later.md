@@ -8,11 +8,6 @@ that have no fix.
 
 Turn each on temporarily, count what fails, and decide before changing anything.
 
-1. **Stricter TypeScript** beyond `strict` (which `@tsconfig/svelte` sets):
-   `noUncheckedIndexedAccess` (`array[i]` is "maybe undefined"), `noUnusedLocals` and
-   `noUnusedParameters` (`tsconfig.node.json` already has them for `vite.config.ts`),
-   `noImplicitReturns`, `noFallthroughCasesInSwitch`, `noImplicitOverride`. They catch real
-   bugs; the first one adds checks in several places (`byStatus[...]`, `mock.calls[n]`).
-2. **typescript-eslint `strictTypeChecked`** instead of `recommended`: many more type-aware rules
+1. **typescript-eslint `strictTypeChecked`** instead of `recommended`: many more type-aware rules
    (unnecessary conditions, unsafe `any`, non-null assertions). It would flag `result.data!` and
    `dropdown.querySelector(...)!`, so it means a cleanup pass.

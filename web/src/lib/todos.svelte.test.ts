@@ -1,6 +1,5 @@
-import createClient from 'openapi-fetch';
-import { describe, expect, test, vi } from 'vitest';
-import type { paths } from '$lib/api/schema';
+import { describe, expect, test } from 'vitest';
+import { json, stubApi } from '$lib/test/api';
 import { TodoList, type Todo } from '$lib/todos.svelte';
 
 const milk: Todo = { id: 1, title: 'buy milk', done: false };
@@ -14,13 +13,9 @@ const titleInvalid = {
 
 /** A TodoList whose API answers with the given responses, in order. */
 function setup(...responses: Response[]) {
-	const fetch = vi.fn<(request: Request) => Promise<Response>>();
-	for (const response of responses) fetch.mockResolvedValueOnce(response);
-	const client = createClient<paths>({ baseUrl: 'http://test/api/v1', fetch });
-	const request = (n: number) => fetch.mock.calls[n][0];
+	const { client, fetch, request } = stubApi(...responses);
 	return { todos: new TodoList(client), fetch, request };
 }
-const json = (body: unknown, status = 200) => Response.json(body, { status });
 const noContent = () => new Response(null, { status: 204 });
 
 describe('load', () => {

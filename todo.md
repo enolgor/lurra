@@ -12,6 +12,24 @@
       `slog.*Context`, `make tidy`, Dockerfile `COPY` lines) or point to it, so each fact lives in
       one place.
 
+## GitHub CI plan
+
+1. `.github/workflows/ci.yml`: on PRs and pushes to `main`; Go from `go.mod`, Node from
+   `web/package.json`; cache Go modules and npm; `make setup ci`.
+2. `.github/workflows/security.yml`: `make security`, separate so a new advisory doesn't block
+   unrelated PRs.
+3. Results on the PR: Vitest annotations (automatic), Go test results and coverage in the job
+   summary.
+4. Docs; making `ci` a required check on `main` is a GitHub setting the user switches on.
+
+Open questions:
+1. Coverage as a job summary (no extra permissions) or a PR comment? *Recommended: job summary.*
+2. Run `security` weekly, on demand, and on PRs that change `go.mod`, `go.sum` or
+   `package-lock.json`? *Recommended: yes.*
+3. Pin actions by commit SHA with Renovate keeping them updated, or by tag? *Recommended: SHA.*
+4. Check whether `actions/setup-node` reads `devEngines` from `package.json`; if not, read the
+   version like the Makefile's `NODE_VERSION` does.
+
 ## Good to know
 
 - Run `make bindings` after changing the API. `schema.ts` does not update during `make dev`.
