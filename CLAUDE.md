@@ -12,6 +12,8 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
   API client in `api/`, state as `*.svelte.ts` modules), own components in
   `src/lib/components/`, shared test helpers and fixtures in `src/lib/test/`. Reuse what's there
   (e.g. menus build on the existing dropdown components) before adding new.
+- `.github/workflows/`: `ci.yml` runs each `make ci` target as its own job (plus `docker`, CI
+  only) and a `ci` job that passes when all do; `security.yml` runs `make security`.
 
 ## Workflow
 
@@ -36,6 +38,11 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
   classes and theme colors (`bg-base-100`, `text-base-content`), no `dark:` and no UI component
   library.
 - Run `make tidy` (not just `go mod tidy`) after dependency changes.
+- A target added to or removed from `make ci` is also added to or removed from the matrix in
+  `.github/workflows/ci.yml`, and the other way round.
+- Go tools go in `tools.mod`. One that conflicts there runs with `go run pkg@version`, its version
+  in a Makefile variable under a `# renovate: datasource=go depName=…` comment. Actions are pinned
+  by commit SHA with the version as a comment (`@<sha> # v7.0.1`).
 - Prefer the simplest option; keep Makefile targets few (private helpers start with `_`).
 - Don't repeat logic: when a change would copy behavior that already exists (a component, a
   helper, a test setup), propose extracting it into one shared place, and ask before doing it.
@@ -79,7 +86,8 @@ doesn't cover yet, with the check to add. Run `make ci` first; then check:
 - **Consistency:** the same thing is named and done the same way everywhere (imports via `$lib`,
   messages via `m.key()`, theme colors, test style, comment style, file names); every path in a
   config, comment or doc exists; the Makefile summary, `make help` and `.PHONY` list the same
-  targets; the Dockerfile copies every Go dir.
+  targets; `make ci` and the `ci.yml` matrix list the same targets; the Dockerfile copies every
+  Go dir; workflow actions are pinned by SHA.
 - **Config:** no dead or duplicated settings (aliases, excludes, ignores), each setting in the one
   place that reads it, and comments that match what the setting does.
 - **Up to date:** every tool's config (tsconfig, ESLint, Vitest, golangci-lint, Prettier, Vite,

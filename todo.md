@@ -1,6 +1,7 @@
 # Todo
 
-- [ ] **Add GitHub CI** (plan below).
+- [ ] **Make `ci` a required check on `main`** once the repo is on GitHub (Settings → Rules →
+      require status checks: `ci`). It's the job that passes only when every other check did.
 - [ ] **Install the Renovate app** when publishing. The config is in `.github/renovate.json`.
       Check that the onboarding PR detects `tools.mod`. Add a rule so `@types/node` stays on the
       Node runtime's major (24, from `devEngines`) instead of jumping to the latest.
@@ -11,36 +12,6 @@
       section. Drop the notes that repeat `CLAUDE.md` (migrations, `api.writeError`,
       `slog.*Context`, `make tidy`, Dockerfile `COPY` lines) or point to it, so each fact lives in
       one place.
-
-## GitHub CI plan
-
-`make ci` stays the local "run everything before pushing" command; CI runs the same targets,
-but as separate jobs.
-
-1. `.github/workflows/ci.yml`, on every PR push and on pushes to `main` (the same jobs on both,
-   so they can't disagree):
-   - One job definition with a matrix over `make ci`'s targets (`check-go`, `check-web`,
-     `check-i18n`, `test-go`, `test-web`, `build`), each running `make setup <target>`: one PR
-     check per target, in parallel, `fail-fast: false` so one failure doesn't cancel the rest,
-     and a failed one can be rerun alone.
-   - Each: Go from `go.mod`, Node from `web/package.json`, Go modules and npm cached.
-   - A final `ci` job that `needs` all of them and passes only if they all did: the one
-     required check on `main`, so adding or renaming a target doesn't touch GitHub's settings.
-   - The matrix and `make ci` list the same targets; a comment on each side says so (the
-     Makefile already has one), and the audit checks it.
-2. `.github/workflows/security.yml`: `make security`, separate so a new advisory doesn't block
-   unrelated PRs.
-3. Results on the PR: Vitest annotations (automatic), Go test results and coverage in the job
-   summary.
-4. Docs; making `ci` a required check on `main` is a GitHub setting the user switches on.
-
-Open questions:
-1. Coverage as a job summary (no extra permissions) or a PR comment? *Recommended: job summary.*
-2. Run `security` weekly, on demand, and on PRs that change `go.mod`, `go.sum` or
-   `package-lock.json`? *Recommended: yes.*
-3. Pin actions by commit SHA with Renovate keeping them updated, or by tag? *Recommended: SHA.*
-4. Check whether `actions/setup-node` reads `devEngines` from `package.json`; if not, read the
-   version like the Makefile's `NODE_VERSION` does.
 
 ## Good to know
 
@@ -107,6 +78,16 @@ Open questions:
   handlers and server, web components and state), but nothing tests them together in a browser.
   Check what only shows up there (the embedded SPA, the CSP, the SPA fallback) by hand with
   `make debug` or the built binary.
+- CI (`.github/workflows/ci.yml`) runs each `make ci` target as its own job, so they show as
+  separate PR checks and run in parallel, plus `docker`, which only CI runs (it needs Docker).
+  Locally, `make ci` runs the same checks in one go. Require only the `ci` job on `main`.
+  `security.yml` runs weekly, on demand and on dependency changes, and isn't required, so a new
+  advisory doesn't block unrelated PRs.
+- In CI, actionlint also runs shellcheck on the workflows' `run:` scripts (GitHub's runners have
+  it); locally only if shellcheck is installed, so CI's `check-workflows` can be stricter.
+- actionlint isn't in `tools.mod` (its YAML dependency conflicts with another tool's): the
+  Makefile runs it with `go run …@$(ACTIONLINT_VERSION)`, and Renovate updates that version
+  through the `# renovate:` comment above it.
 - About half of `make test-web` is jsdom setup, one per test file. Vitest suggests
   `pool: 'vmThreads'` or `isolate: false`; both are left off on purpose: `isolate: false` leaks
   state between files (locale, `localStorage`, URL), and `vmThreads` has known memory issues.

@@ -1,24 +1,25 @@
 # Targets (run `make help` for the same list from the ## comments below)
 #
-#   help        Show this help (the default: plain `make`)
-#   setup       Download deps and compile dev tools (checks go and node first)
-#   format      Format Go (gofmt) and web code (Prettier); the checks only report it
-#   check-go    Go static checks: gofmt, go.mod tidiness, golangci-lint
-#   test-go     Go tests with the race detector, then coverage thresholds
-#   stress      Concurrency tests, repeatedly, under the race detector
-#   check-web   Web static checks: API bindings up to date, svelte-check, Prettier, ESLint
-#   check-i18n  Translation checks: missing, empty or broken translations, unused messages
-#   translate   Machine-translate messages from en into the other locales (your own provider)
-#   test-web    Web tests (Vitest), then coverage thresholds
-#   bindings    Regenerate web/src/lib/api/schema.ts from the API annotations
-#   tidy        Tidy go.mod/go.sum and tools.mod/tools.sum
-#   security    Vulnerability checks for Go and npm dependencies
-#   dev         Run air and vite with live reload
-#   debug       Run the API under Delve with the built SPA; attach your editor
-#   build       Compile the binary with the SPA embedded
-#   docker      Build the Docker image
-#   clean       Remove build artifacts
-#   ci          Everything the PR checks run: check-go check-web check-i18n test-go test-web build
+#   help             Show this help (the default: plain `make`)
+#   setup            Download deps and compile dev tools (checks go and node first)
+#   format           Format Go (gofmt) and web code (Prettier); the checks only report it
+#   check-go         Go static checks: gofmt, go.mod tidiness, golangci-lint
+#   test-go          Go tests with the race detector, then coverage thresholds
+#   stress           Concurrency tests, repeatedly, under the race detector
+#   check-web        Web static checks: API bindings up to date, svelte-check, Prettier, ESLint
+#   check-i18n       Translation checks: missing, empty or broken translations, unused messages
+#   translate        Machine-translate messages from en into the other locales (your own provider)
+#   test-web         Web tests (Vitest), then coverage thresholds
+#   bindings         Regenerate web/src/lib/api/schema.ts from the API annotations
+#   tidy             Tidy go.mod/go.sum and tools.mod/tools.sum
+#   security         Vulnerability checks for Go and npm dependencies
+#   dev              Run air and vite with live reload
+#   debug            Run the API under Delve with the built SPA; attach your editor
+#   build            Compile the binary with the SPA embedded
+#   docker           Build the Docker image
+#   clean            Remove build artifacts
+#   check-workflows  Lint the GitHub Actions workflows (actionlint)
+#   ci               Everything the PR checks run: the checks above, the tests and the build
 #
 # Targets starting with _ are helpers: hidden from help, but callable (e.g. `make _lint`).
 
@@ -29,7 +30,7 @@ MAKEFLAGS += --no-print-directory
 	check-web _bindings-check _lint-web check-i18n translate _openapi bindings test-web \
 	tidy security _vuln _audit \
 	dev _dev-api _dev-web debug \
-	build docker clean ci
+	build docker clean check-workflows ci
 
 # --- Variables ----------------------------------------------------------------
 
@@ -50,6 +51,10 @@ NODE_VERSION    := $(shell sed -n '/"runtime"/,/}/s/.*"version": "[^0-9]*\([0-9]
 # Our Go files: not the ones some npm packages ship in node_modules. `=`, so only targets that use
 # it run the find; find (not git ls-files) also sees files that aren't committed yet.
 GO_FILES         = $(shell find . \( -path ./web/node_modules -o -path ./.git \) -prune -o -name '*.go' -print)
+# Not in tools.mod: its YAML dependency conflicts with another tool's. `go run pkg@version` builds
+# it with its own go.mod; Renovate updates the version through the comment (renovate.json).
+# renovate: datasource=go depName=github.com/rhysd/actionlint
+ACTIONLINT_VERSION := v1.7.12
 
 # Header for each stage `make ci` runs, so its output says which stage is running.
 STAGE = @printf '\n\033[1m==> %s\033[0m\n' $@
@@ -97,7 +102,8 @@ _lint: # Run linters (includes go vet)
 test-go: ## Go tests with the race detector, then coverage thresholds (.testcoverage.yml)
 	$(STAGE)
 	@mkdir -p $(TMP_DIR)
-	@go test -race -shuffle=on -coverprofile=$(COVER_PROFILE) ./...
+	@# gotestsum runs go test with the flags after --; GOTESTSUM_FORMAT picks the output (CI: github-actions)
+	@$(GO_TOOL) gotestsum -- -race -shuffle=on -coverprofile=$(COVER_PROFILE) ./...
 	@$(GO_TOOL) go-test-coverage -c .testcoverage.yml -p $(COVER_PROFILE)
 
 stress: ## Run concurrency tests repeatedly under the race detector
@@ -194,5 +200,11 @@ clean: ## Remove build artifacts
 
 # --- CI -----------------------------------------------------------------------
 
-# Keep in sync with the mandatory PR check jobs (security runs separately).
-ci: check-go check-web check-i18n test-go test-web build ## Everything the PR checks run
+check-workflows: ## Lint the GitHub Actions workflows (actionlint)
+	$(STAGE)
+	@go run github.com/rhysd/actionlint/cmd/actionlint@$(ACTIONLINT_VERSION)
+	@echo "check-workflows: ok"
+
+# Keep in sync with the jobs in .github/workflows/ci.yml. Only CI also runs `docker` (it needs
+# Docker and takes minutes); security runs separately.
+ci: check-go check-web check-i18n check-workflows test-go test-web build ## Everything the PR checks run
