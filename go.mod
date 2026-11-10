@@ -8,7 +8,7 @@ require (
 	github.com/go-chi/httplog/v3 v3.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/ncruces/go-sqlite3 v0.37.0
-	github.com/pressly/goose/v3 v3.29.0
+	github.com/pressly/goose/v3 v3.30.0
 )
 
 require (
@@ -17,8 +17,8 @@ require (
 	github.com/ncruces/julianday v1.0.0 // indirect
 	github.com/sethvargo/go-retry v0.5.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/sync v0.24.0 // indirect
-	golang.org/x/sys v0.49.0 // indirect
+	golang.org/x/sync v0.25.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
 )
 
 ignore ./web/node_modules
