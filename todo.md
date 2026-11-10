@@ -1,7 +1,6 @@
 # Todo
 
-- [ ] **Add GitHub CI.** A workflow running `make setup ci`, a separate one for `make security`,
-      and `ci` as a required check on `main`. Report tests, coverage, etc. etc. for PR merge checks.
+- [ ] **Add GitHub CI** (plan below).
 - [ ] **Install the Renovate app** when publishing. The config is in `.github/renovate.json`.
       Check that the onboarding PR detects `tools.mod`. Add a rule so `@types/node` stays on the
       Node runtime's major (24, from `devEngines`) instead of jumping to the latest.
@@ -15,8 +14,20 @@
 
 ## GitHub CI plan
 
-1. `.github/workflows/ci.yml`: on PRs and pushes to `main`; Go from `go.mod`, Node from
-   `web/package.json`; cache Go modules and npm; `make setup ci`.
+`make ci` stays the local "run everything before pushing" command; CI runs the same targets,
+but as separate jobs.
+
+1. `.github/workflows/ci.yml`, on every PR push and on pushes to `main` (the same jobs on both,
+   so they can't disagree):
+   - One job definition with a matrix over `make ci`'s targets (`check-go`, `check-web`,
+     `check-i18n`, `test-go`, `test-web`, `build`), each running `make setup <target>`: one PR
+     check per target, in parallel, `fail-fast: false` so one failure doesn't cancel the rest,
+     and a failed one can be rerun alone.
+   - Each: Go from `go.mod`, Node from `web/package.json`, Go modules and npm cached.
+   - A final `ci` job that `needs` all of them and passes only if they all did: the one
+     required check on `main`, so adding or renaming a target doesn't touch GitHub's settings.
+   - The matrix and `make ci` list the same targets; a comment on each side says so (the
+     Makefile already has one), and the audit checks it.
 2. `.github/workflows/security.yml`: `make security`, separate so a new advisory doesn't block
    unrelated PRs.
 3. Results on the PR: Vitest annotations (automatic), Go test results and coverage in the job
@@ -34,8 +45,9 @@ Open questions:
 ## Good to know
 
 - Run `make bindings` after changing the API. `schema.ts` does not update during `make dev`.
-- Format by hand with `gofmt -w .`. `go fmt ./...` skips `web/embed.go` because of its build tag.
-  Format the web code with `npm --prefix web run format`.
+- Format with `make format` (gofmt and Prettier). Not `go fmt ./...`: it skips `web/embed.go`
+  because of its build tag. Not `gofmt -w .` either: it would rewrite the `.go` files some npm
+  packages ship in `web/node_modules`.
 - golangci-lint (`.golangci.yml`) runs only in `make check-go`, not in VS Code: it's a Go tool in
   `tools.mod`, and the Go extension's `go.alternateTools` needs an executable, not a command. To
   lint on save, add a script that runs `go tool -modfile=tools.mod golangci-lint "$@"` and point

@@ -2,6 +2,7 @@
 #
 #   help        Show this help (the default: plain `make`)
 #   setup       Download deps and compile dev tools (checks go and node first)
+#   format      Format Go (gofmt) and web code (Prettier); the checks only report it
 #   check-go    Go static checks: gofmt, go.mod tidiness, golangci-lint
 #   test-go     Go tests with the race detector, then coverage thresholds
 #   stress      Concurrency tests, repeatedly, under the race detector
@@ -23,7 +24,7 @@
 
 .DEFAULT_GOAL := help
 MAKEFLAGS += --no-print-directory
-.PHONY: help _check-env setup \
+.PHONY: help _check-env setup format \
 	check-go _fmt-check _tidy-check _lint test-go stress \
 	check-web _bindings-check _lint-web check-i18n translate _openapi bindings test-web \
 	tidy security _vuln _audit \
@@ -46,6 +47,9 @@ IMAGE_NAME      := $(BIN_NAME)
 VERSION         := $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 GO_VERSION      := $(shell sed -n 's/^go //p' go.mod)
 NODE_VERSION    := $(shell sed -n '/"runtime"/,/}/s/.*"version": "[^0-9]*\([0-9]*\).*/\1/p' $(WEB_DIR)/package.json)
+# Our Go files: not the ones some npm packages ship in node_modules. `=`, so only targets that use
+# it run the find; find (not git ls-files) also sees files that aren't committed yet.
+GO_FILES         = $(shell find . \( -path ./web/node_modules -o -path ./.git \) -prune -o -name '*.go' -print)
 
 # Header for each stage `make ci` runs, so its output says which stage is running.
 STAGE = @printf '\n\033[1m==> %s\033[0m\n' $@
@@ -66,14 +70,19 @@ setup: _check-env ## Download deps and compile dev tools
 	@npm --prefix $(WEB_DIR) ci --silent --no-audit --no-fund
 	@echo "setup: ok"
 
+format: ## Format Go (gofmt) and web code (Prettier); the checks only report it
+	@gofmt -w $(GO_FILES)
+	@npm --prefix $(WEB_DIR) run format --silent -- --log-level warn
+	@echo "format: ok"
+
 # --- Go -----------------------------------------------------------------------
 
 check-go: ## Go static checks: gofmt, go.mod tidiness, golangci-lint
 	$(STAGE)
 	@$(MAKE) -k _fmt-check _tidy-check _lint
 
-_fmt-check: # Fail if Go code is not formatted
-	@test -z "$$(gofmt -l .)" || (gofmt -l . && exit 1)
+_fmt-check: # Fail if Go code is not formatted (fix with make format)
+	@test -z "$$(gofmt -l $(GO_FILES))" || (gofmt -l $(GO_FILES) && exit 1)
 	@echo "fmt-check: ok"
 
 _tidy-check: # Fail if go.mod/go.sum/tools.mod/tools.sum are not tidy
@@ -100,7 +109,7 @@ check-web: ## Web static checks: API bindings up to date, svelte-check, Prettier
 	$(STAGE)
 	@$(MAKE) -k _bindings-check _lint-web
 
-_lint-web: # Type-check (svelte-check), then formatting (Prettier) and lint (ESLint); fix with npm run format
+_lint-web: # Type-check (svelte-check), then formatting (Prettier) and lint (ESLint); fix formatting with make format
 	@npm --prefix $(WEB_DIR) run check --silent
 	@npm --prefix $(WEB_DIR) run lint --silent
 	@echo "lint-web: ok"
