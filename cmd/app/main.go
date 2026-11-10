@@ -1,4 +1,4 @@
-package main //nolint:revive // shouldn't be imported by other modules
+package main //nolint:revive // the app's entry point, not a library: no package doc needed
 
 import (
 	"context"

@@ -1,9 +1,8 @@
 import { describe, expect, test } from 'vitest';
 import { json, stubApi } from '$lib/test/api';
-import { TodoList, type Todo } from '$lib/todos.svelte';
+import { bread, milk, serverError } from '$lib/test/todos';
+import { TodoList } from '$lib/todos.svelte';
 
-const milk: Todo = { id: 1, title: 'buy milk', done: false };
-const bread: Todo = { id: 2, title: 'bake bread', done: true };
 const titleInvalid = {
 	code: 400,
 	message: 'title is empty',
@@ -34,13 +33,12 @@ describe('load', () => {
 	});
 
 	test('keeps the API error for the inline alert', async () => {
-		const error = { code: 500, message: 'Internal Server Error', request_id: 'host/abc-000002' };
-		const { todos } = setup(json(error, 500));
+		const { todos } = setup(json(serverError, 500));
 
 		await todos.load();
 
 		expect(todos.loading).toBe(false);
-		expect(todos.loadError).toEqual(error);
+		expect(todos.loadError).toEqual(serverError);
 		expect(todos.actionError).toBeNull();
 		expect(todos.items).toEqual([]);
 	});

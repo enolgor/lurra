@@ -10,12 +10,6 @@ threshold:
   package: 100
   total: 100
 
-# Regexp rules matched against file or package paths; the first match wins,
-# so list specific rules before general ones.
-override: []
-#  - path: ^internal/httpx$
-#    threshold: 100
-
 # Regexp rules for files or packages left out of coverage statistics.
 # Packages without tests are reported at 0%, so a new one fails the thresholds
 # until it gets tests or is excluded here.

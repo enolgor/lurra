@@ -1,5 +1,6 @@
 # Targets (run `make help` for the same list from the ## comments below)
 #
+#   help        Show this help (the default: plain `make`)
 #   setup       Download deps and compile dev tools (checks go and node first)
 #   check-go    Go static checks: gofmt, go.mod tidiness, golangci-lint
 #   test-go     Go tests with the race detector, then coverage thresholds

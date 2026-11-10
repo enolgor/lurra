@@ -5,15 +5,13 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
 
 ## Layout
 
-- `cmd/app`: wiring only. `internal/config` env/.env, `logging` slog handler, `server` router,
-  middleware, security headers (CSP) and SPA fallback, `api` handlers, `httpx` JSON/errors,
-  `model` types, errors and `TodoStore`, `store/sqlite` store and `migrations/`.
-- `web/`: Svelte 5 + Vite, no SvelteKit. Pages in `src/routes/` (`Home` the todo list,
-  `NotFound`), routed by `src/lib/router.ts` (sv-router). `src/lib/api/client.ts` the one API
-  client (openapi-fetch), `src/lib/todos.svelte.ts` the todo list state (`TodoList`), own
-  components in `src/lib/components/` (menus build on `Dropdown.svelte`, API errors show through
-  `ApiErrorAlert.svelte`), shared test helpers in `src/lib/test/` (`stubApi`), i18n in `src/lib/i18n.svelte.ts`, light/dark in
-  `src/lib/theme.svelte.ts` (+ `public/theme.js`). `web/*.go` serves `dist/`.
+- `cmd/app`: wiring only. `internal/`: one package per concern (config, logging, server, api
+  handlers, httpx, model, store); SQL migrations live with the store.
+- `web/`: Svelte 5 + Vite SPA, no SvelteKit; `web/*.go` serves its `dist/`. Pages in
+  `src/routes/` (routed by sv-router in `src/lib/router.ts`), shared code in `src/lib/` (the one
+  API client in `api/`, state as `*.svelte.ts` modules), own components in
+  `src/lib/components/`, shared test helpers and fixtures in `src/lib/test/`. Reuse what's there
+  (e.g. menus build on the existing dropdown components) before adding new.
 
 ## Workflow
 
@@ -43,7 +41,8 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
 - Don't repeat logic: when a change would copy behavior that already exists (a component, a
   helper, a test setup), propose extracting it into one shared place, and ask before doing it.
 - Keep this file current: when a new rule, convention or repeated correction appears, propose
-  adding it here, in as few words as possible.
+  adding it here, in as few words as possible. When a new tool, check or convention is added,
+  also propose the audit check that keeps it in shape (see Audits).
 
 ## Rules
 
@@ -52,8 +51,7 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
   Plain `if err != nil { return ..., err }` bodies are excluded automatically.
 - Web coverage is also 100% (Vitest, `make test-web`). Tests sit next to the code as
   `*.test.ts` (Testing Library); skip a branch with `/* v8 ignore next -- <reason> */`.
-  `src/lib/api/schema.ts`, `src/lib/paraglide/`, `src/lib/test/` and `src/main.ts` are excluded in
-  `vite.config.ts`.
+  Generated code, `main.ts` and test helpers are excluded (the list is in `vite.config.ts`).
 - Test behavior, not just lines: new features get tests for their intended behavior and edge
   cases, and bug fixes get a regression test, even when coverage is already 100%.
 - New packages need tests or an exclude in `.testcoverage.yml`.
@@ -68,7 +66,8 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
 
 When asked for an audit, change nothing: read (never install, format or delete), then report
 findings grouped as *should fix*, *needs a decision* and *optional*, plus what was checked and
-found fine, and wait for which ones to fix. Run `make ci` first; then check:
+found fine, and wait for which ones to fix. Also report anything the audit found that this list
+doesn't cover yet, with the check to add. Run `make ci` first; then check:
 
 - **Dependencies:** every npm, `go.mod` and `tools.mod` entry is used (code, config, scripts,
   Makefile); nothing is duplicated or in the wrong section (all npm deps are dev); `npm ls` and

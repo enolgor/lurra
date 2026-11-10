@@ -3,13 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { searchParams } from 'sv-router';
 import { afterEach, describe, expect, test } from 'vitest';
 import { json, stubApi } from '$lib/test/api';
-import { TodoList, type Todo } from '$lib/todos.svelte';
+import { bread, milk, serverError } from '$lib/test/todos';
+import { TodoList } from '$lib/todos.svelte';
 import Home from './Home.svelte';
 import { defined } from '$lib/test/defined';
-
-const milk: Todo = { id: 1, title: 'buy milk', done: false };
-const bread: Todo = { id: 2, title: 'bake bread', done: true };
-const serverError = { code: 500, message: 'x', request_id: 'host/abc-000001' };
 
 /** Renders the page with an API that answers with the given responses, in order. */
 function setup(...responses: (Response | Promise<Response>)[]) {

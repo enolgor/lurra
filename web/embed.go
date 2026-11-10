@@ -1,6 +1,6 @@
 //go:build embed
 
-package web //nolint:revive // shouldn't be imported by other modules
+package web //nolint:revive // part of the app, not a library: no package doc needed
 
 import (
 	"embed"

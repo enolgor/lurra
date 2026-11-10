@@ -26,6 +26,7 @@ test('lists light, dark and system, with the current one marked', async () => {
 
 	await user.click(trigger());
 
+	expect(screen.getByText('Select theme')).toBeVisible();
 	expect(screen.getAllByRole('button').map((button) => button.textContent.trim())).toEqual([
 		'Light',
 		'Dark',

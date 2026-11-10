@@ -15,5 +15,8 @@ web/project.inlang/*
 .env
 .env.*
 
-# tests don't affect the binary, so changing them shouldn't rebuild it
+# tests don't affect the binary or the web bundle, so changing them shouldn't rebuild either
 **/*_test.go
+web/src/**/*.test.ts
+web/src/lib/test
+web/src/vitest-setup.ts

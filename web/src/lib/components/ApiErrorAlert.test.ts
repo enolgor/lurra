@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { expect, test } from 'vitest';
 import { setLocale } from '$lib/paraglide/runtime.js';
+import { serverError } from '$lib/test/todos';
 import type { ApiError } from '$lib/todos.svelte';
 import ApiErrorAlert from './ApiErrorAlert.svelte';
 
@@ -29,9 +30,7 @@ test.each<[string, Omit<ApiError, 'message'>, string]>([
 });
 
 test('shows the request ID when there is one', () => {
-	const { unmount } = render(ApiErrorAlert, {
-		error: { code: 500, message: 'x', request_id: 'host/abc-000001' }
-	});
+	const { unmount } = render(ApiErrorAlert, { error: serverError });
 	expect(screen.getByText('Request ID: host/abc-000001')).toBeInTheDocument();
 	unmount();
 

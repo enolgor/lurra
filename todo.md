@@ -3,7 +3,8 @@
 - [ ] **Add GitHub CI.** A workflow running `make setup ci`, a separate one for `make security`,
       and `ci` as a required check on `main`. Report tests, coverage, etc. etc. for PR merge checks.
 - [ ] **Install the Renovate app** when publishing. The config is in `.github/renovate.json`.
-      Check that the onboarding PR detects `tools.mod`.
+      Check that the onboarding PR detects `tools.mod`. Add a rule so `@types/node` stays on the
+      Node runtime's major (24, from `devEngines`) instead of jumping to the latest.
 - [ ] devcontainers json?
 - [ ] **Write the README** once the template is done, and merge this file into it. One README
       with everything: what the template is, requirements (Go, Node), quick start
@@ -90,6 +91,10 @@ Open questions:
   for it, and Tailwind prints CSS warnings with a bare `console.warn`). `npm run build` alone
   doesn't fail. daisyUI's `join` triggers two "Invalid empty selector" warnings, so the add form
   in `routes/Home.svelte` uses `flex gap-2`; try `join` again after daisyUI or Tailwind updates.
+- About half of `make test-web` is jsdom setup, one per test file. Vitest suggests
+  `pool: 'vmThreads'` or `isolate: false`; both are left off on purpose: `isolate: false` leaks
+  state between files (locale, `localStorage`, URL), and `vmThreads` has known memory issues.
+  Revisit if the suite gets slow.
 
 ## Stack
 
@@ -100,9 +105,12 @@ Open questions:
  - [x] tool github.com/go-task/task/v3/cmd/task@latest (nope - use makefile)
  - [x] tool github.com/air-verse/air
  - [x] sqlite
- - [ ] go get -tool github.com/getsops/sops/v3/cmd/sops@latest
- - [x] air + vite/proxy for live-reload (vite proxy done, air pending)
- - [x] embed dist + serve (serving from disk, embed pending)
- - [ ] jwt chi + oidc for auth
- - [ ] paraglide / inlang for translations
+ - [x] air + vite/proxy for live-reload
+ - [x] embed dist + serve
+ - [x] paraglide / inlang for translations
  - [x] openapi-fetch
+
+## Future ideas
+
+ - [ ] go get -tool github.com/getsops/sops/v3/cmd/sops@latest
+ - [ ] jwt chi + oidc for auth

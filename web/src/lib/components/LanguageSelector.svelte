@@ -1,7 +1,7 @@
 <script lang="ts">
-	import CheckIcon from '@lucide/svelte/icons/check';
 	import LanguagesIcon from '@lucide/svelte/icons/languages';
 	import Dropdown from '$lib/components/Dropdown.svelte';
+	import MenuOption from '$lib/components/MenuOption.svelte';
 	import { localeFlag, localeName } from '$lib/locale';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale, locales, setLocale, type Locale } from '$lib/paraglide/runtime.js';
@@ -20,18 +20,9 @@
 	{/snippet}
 	<li class="menu-title">{m.language_selector_label()}</li>
 	{#each locales as locale (locale)}
-		<li>
-			<button
-				type="button"
-				aria-current={locale === getLocale()}
-				onclick={() => changeLocale(locale)}
-			>
-				<span aria-hidden="true">{localeFlag(locale)}</span>
-				<span lang={locale}>{localeName(locale)}</span>
-				{#if locale === getLocale()}
-					<CheckIcon class="ml-auto size-4" />
-				{/if}
-			</button>
-		</li>
+		<MenuOption current={locale === getLocale()} onclick={() => changeLocale(locale)}>
+			<span aria-hidden="true">{localeFlag(locale)}</span>
+			<span lang={locale}>{localeName(locale)}</span>
+		</MenuOption>
 	{/each}
 </Dropdown>
