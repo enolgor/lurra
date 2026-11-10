@@ -89,6 +89,11 @@
   breakdown, its own numbers, with the thresholds from `.testcoverage.yml`). On GitHub, files
   below the threshold are also annotated on the PR. To preview a summary locally:
   `sort .tmp/coverage-go.txt | awk -F';' -f .github/scripts/go-coverage.awk`.
+- setup-go's cache key comes from `go.sum` and `tools.sum`, and a cache is saved only on a miss,
+  by the first job that succeeds; later runs restore it and never save again. So only `ci.yml`
+  caches Go: another workflow with the same files (`security.yml`, or a new one) has
+  `cache: false`, or it could save a partial cache that every `ci` job then restores. If tool
+  downloads show up in every job, delete the `setup-go-…` entry under Actions → Caches.
 - In CI, actionlint also runs shellcheck on the workflows' `run:` scripts (GitHub's runners have
   it); locally only if shellcheck is installed, so CI's `check-workflows` can be stricter.
 - actionlint isn't in `tools.mod` (its YAML dependency conflicts with another tool's): the
