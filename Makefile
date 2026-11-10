@@ -75,6 +75,10 @@ _check-env: # Fail early if go is missing, or node is missing or has the wrong m
 
 setup: _check-env ## Download deps and compile dev tools
 	@go mod download
+	@# fetch what `go mod tidy` loads (dependencies' test imports) so check-go doesn't download it
+	@# every run, and CI's cache has it; -diff writes nothing, check-go does the real check
+	@go mod tidy -diff >/dev/null 2>&1 || true
+	@go mod tidy -diff -modfile=$(TOOLS_MOD) >/dev/null 2>&1 || true
 	@go build -modfile=$(TOOLS_MOD) tool
 	@npm --prefix $(WEB_DIR) ci --silent --no-audit --no-fund
 	@echo "setup: ok"
