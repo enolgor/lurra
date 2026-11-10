@@ -44,7 +44,7 @@
 		"eslint-plugin-better-tailwindcss": "^4.10.0",
 		"eslint-plugin-svelte": "^3.19.0",
 		"globals": "^17.6.0",
-		"jsdom": "^29.1.1",
+		"jsdom": "^31.0.0",
 		"openapi-fetch": "^0.17.0",
 		"openapi-typescript": "^7.13.0",
 		"prettier": "^3.8.3",
