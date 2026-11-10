@@ -16,6 +16,7 @@
 #   dev              Run air and vite with live reload
 #   debug            Run the API under Delve with the built SPA; attach your editor
 #   build            Compile the binary with the SPA embedded
+#   release          Binaries for every release platform, as archives with checksums, in bin/release
 #   docker           Build the Docker image
 #   clean            Remove build artifacts
 #   check-workflows  Lint the GitHub Actions workflows (actionlint)
@@ -30,7 +31,7 @@ MAKEFLAGS += --no-print-directory
 	check-web _bindings-check _lint-web check-i18n translate _openapi bindings test-web \
 	tidy security _vuln _audit \
 	dev _dev-api _dev-web debug \
-	build docker clean check-workflows ci
+	build release _build-web docker clean check-workflows ci
 
 # --- Variables ----------------------------------------------------------------
 
@@ -48,7 +49,13 @@ COVER_BREAKDOWN := $(TMP_DIR)/coverage-go.txt
 BIN_DIR         := bin
 BIN_NAME        := app
 CMD_PATH        := ./cmd/$(BIN_NAME)
+# The release binary: pure Go (no cgo), the SPA embedded, the version stamped into main.version
+GO_BUILD        := CGO_ENABLED=0 go build -trimpath -tags embed -ldflags "-s -w -X main.version=$(VERSION)"
+RELEASE_DIR     := $(BIN_DIR)/release
+RELEASE_PLATFORMS := linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64
 IMAGE_NAME      := $(BIN_NAME)
+# Extra `docker build` flags, e.g. the release's --platform, more -t tags and --push (release.yml)
+DOCKER_FLAGS    :=
 VERSION         := $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 GO_VERSION      := $(shell sed -n 's/^go //p' go.mod)
 NODE_VERSION    := $(shell sed -n '/"runtime"/,/}/s/.*"version": "[^0-9]*\([0-9]*\).*/\1/p' $(WEB_DIR)/package.json)
@@ -194,15 +201,34 @@ debug: ## Build the SPA with source maps, then run the API under Delve (headless
 
 build: ## Compile the binary with the SPA embedded
 	$(STAGE)
+	@$(MAKE) _build-web
+	@$(GO_BUILD) -v -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
+	@echo "build: ok ($(VERSION))"
+
+release: ## Binaries for every release platform, as archives with checksums, in bin/release
+	$(STAGE)
+	@$(MAKE) _build-web
+	@rm -rf $(RELEASE_DIR) && mkdir -p $(RELEASE_DIR)
+	@for platform in $(RELEASE_PLATFORMS); do \
+		os=$${platform%/*}; arch=$${platform#*/}; ext=; [ $$os = windows ] && ext=.exe; \
+		name=$(BIN_NAME)-$(VERSION)-$$os-$$arch; \
+		mkdir -p $(RELEASE_DIR)/$$name && cp LICENSE README.md $(RELEASE_DIR)/$$name/ && \
+		GOOS=$$os GOARCH=$$arch $(GO_BUILD) -o $(RELEASE_DIR)/$$name/$(BIN_NAME)$$ext $(CMD_PATH) && \
+		tar -czf $(RELEASE_DIR)/$$name.tar.gz -C $(RELEASE_DIR) $$name && rm -r $(RELEASE_DIR)/$$name && \
+		echo "  $$name.tar.gz" || exit 1; \
+	done
+	@# shasum (not sha256sum) is on macOS too; `sha256sum -c SHA256SUMS` checks the result
+	@cd $(RELEASE_DIR) && shasum -a 256 *.tar.gz > SHA256SUMS
+	@echo "release: ok ($(VERSION), $(RELEASE_DIR))"
+
+_build-web: # Build the SPA (web/dist), failing on warnings
 	@# vite has no fail-on-warnings flag, and Tailwind prints CSS warnings with a bare console.warn
 	@out=$$(npm --prefix $(WEB_DIR) run build 2>&1); status=$$?; echo "$$out"; \
 	[ $$status -eq 0 ] || exit $$status; \
 	! echo "$$out" | grep -qi 'warning' || { echo "build: the web build printed warnings, see above"; exit 1; }
-	@CGO_ENABLED=0 go build -v -trimpath -tags embed -ldflags "-s -w -X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
-	@echo "build: ok ($(VERSION))"
 
 docker: ## Build the Docker image
-	@docker build --build-arg GO_VERSION=$(GO_VERSION) --build-arg NODE_VERSION=$(NODE_VERSION) --build-arg VERSION=$(VERSION) -t $(IMAGE_NAME):$(VERSION) .
+	@docker build --build-arg GO_VERSION=$(GO_VERSION) --build-arg NODE_VERSION=$(NODE_VERSION) --build-arg VERSION=$(VERSION) -t $(IMAGE_NAME):$(VERSION) $(DOCKER_FLAGS) .
 
 clean: ## Remove build artifacts
 	@rm -rf $(BIN_DIR) $(TMP_DIR) $(WEB_DIR)/dist $(WEB_DIR)/src/lib/paraglide

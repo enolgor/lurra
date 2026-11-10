@@ -13,12 +13,18 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
   `src/lib/components/`, shared test helpers and fixtures in `src/lib/test/`. Reuse what's there
   (e.g. menus build on the existing dropdown components) before adding new.
 - `.github/workflows/`: `ci.yml` runs each `make ci` target as its own job (plus `docker`, CI
-  only) and a `ci` job that passes when all do; `security.yml` runs `make security`. Scripts
+  only) and a `ci` job that passes when all do; `security.yml` runs `make security`;
+  `release.yml` publishes the binaries (`make release`) and the image for each `v*` tag. Scripts
   the workflows run (job summaries) live in `.github/scripts/`, not inline.
 
 ## Workflow
 
-- Answer questions and wait; edit files only after an explicit go-ahead.
+- Answer questions and wait; edit files only after an explicit go-ahead. A question counts even
+  inside a "yes" ("yes, but how …?"); for "how do I …?", give the command instead of running it.
+- One step at a time: for multi-step work, plan first, then make one small change, show what
+  changed, and wait before the next; keep the plan as a crossed-off checklist.
+- Check the current state before suggesting: `git status`/`git log` before proposing a commit
+  (the user commits and pushes), and reread files before calling something missing.
 - Run the checks for what you touched: `make check-go test-go` (Go), `make check-web test-web`
   (`web/`), `make ci` for Makefile, Docker or tooling changes. Docs (`*.md`) need none. Fix all
   failures.
@@ -44,6 +50,10 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
 - Go tools go in `tools.mod`. One that conflicts there runs with `go run pkg@version`, its version
   in a Makefile variable under a `# renovate: datasource=go depName=…` comment. Actions are pinned
   by commit SHA with the version as a comment (`@<sha> # v7.0.1`).
+- Only `ci.yml` caches Go: any other workflow with `setup-go` sets `cache: false`, or it can save
+  a partial cache under the same key that every `ci` job then restores.
+- Keep Vitest isolated: no `isolate: false` or `pool: 'vmThreads'` to speed up tests (Vitest
+  suggests both); the first leaks state between test files, the second has memory issues.
 - Prefer the simplest option; keep Makefile targets few (private helpers start with `_`).
 - Don't repeat logic: when a change would copy behavior that already exists (a component, a
   helper, a test setup), propose extracting it into one shared place, and ask before doing it.
@@ -88,7 +98,8 @@ doesn't cover yet, with the check to add. Run `make ci` first; then check:
   messages via `m.key()`, theme colors, test style, comment style, file names); every path in a
   config, comment or doc exists; the Makefile summary, `make help` and `.PHONY` list the same
   targets; `make ci` and the `ci.yml` matrix list the same targets; the Dockerfile copies every
-  Go dir; workflow actions are pinned by SHA.
+  Go dir; workflow actions are pinned by SHA; the README lists the same release platforms as
+  `RELEASE_PLATFORMS` in the Makefile.
 - **Config:** no dead or duplicated settings (aliases, excludes, ignores), each setting in the one
   place that reads it, and comments that match what the setting does.
 - **Up to date:** every tool's config (tsconfig, ESLint, Vitest, golangci-lint, Prettier, Vite,
