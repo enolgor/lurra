@@ -2,7 +2,7 @@ import { expect, test, vi } from 'vitest';
 import { api } from './client';
 
 function respond(status: number, body: unknown) {
-	return vi.fn<typeof fetch>(async () => Response.json(body, { status }));
+	return vi.fn<typeof fetch>(() => Promise.resolve(Response.json(body, { status })));
 }
 
 test('sends requests under /api/v1', async () => {

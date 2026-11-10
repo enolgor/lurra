@@ -118,7 +118,7 @@
 						aria-label={m.todo_title_label()}
 						onkeydown={(event) => onEditKey(event, todo)}
 						onblur={(event) => save(todo, event.currentTarget.value)}
-						{@attach (input) => input.focus()}
+						{@attach (input: HTMLInputElement) => input.focus()}
 					/>
 				{:else}
 					<span class={todo.done ? 'text-base-content/60 line-through' : ''}>{todo.title}</span>

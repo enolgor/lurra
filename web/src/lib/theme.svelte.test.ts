@@ -2,18 +2,14 @@
 /// <reference types="node" />
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, test, vi } from 'vitest';
+import { blockStorage } from '$lib/test/storage';
 import { detectTheme, getTheme, setTheme, themeStorageKey } from '$lib/theme.svelte';
 
 const html = document.documentElement;
-const blockStorage = (method: 'getItem' | 'setItem') =>
-	vi.spyOn(Storage.prototype, method).mockImplementation(() => {
-		throw new DOMException('blocked', 'SecurityError');
-	});
 
 afterEach(() => {
 	vi.restoreAllMocks();
 	setTheme('system');
-	localStorage.clear();
 });
 
 describe('detectTheme', () => {

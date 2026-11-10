@@ -83,6 +83,11 @@ found fine, and wait for which ones to fix. Run `make ci` first; then check:
   targets; the Dockerfile copies every Go dir.
 - **Config:** no dead or duplicated settings (aliases, excludes, ignores), each setting in the one
   place that reads it, and comments that match what the setting does.
+- **Up to date:** every tool's config (tsconfig, ESLint, Vitest, golangci-lint, Prettier, Vite,
+  Renovate, …) uses the current recommended presets, rules and options for the installed
+  versions; nothing deprecated, nothing newer missing.
+- **Duplication:** any repeated code (components, helpers, test setups, config) goes under
+  *should fix*, with where to extract it.
 - **Docs:** `CLAUDE.md`, `todo.md` and code comments describe the code as it is now.
 - **Tests:** behavior is tested, not just lines; every coverage exclude and ignore comment still
   has a valid reason; no skipped tests or leftover debug output.

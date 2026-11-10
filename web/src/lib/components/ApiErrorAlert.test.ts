@@ -1,15 +1,9 @@
 import { render, screen } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
-import { afterEach, expect, test } from 'vitest';
-import '$lib/i18n.svelte';
+import { expect, test } from 'vitest';
 import { setLocale } from '$lib/paraglide/runtime.js';
 import type { ApiError } from '$lib/todos.svelte';
 import ApiErrorAlert from './ApiErrorAlert.svelte';
-
-afterEach(() => {
-	void setLocale('en');
-	localStorage.clear();
-});
 
 // what the server sends as `message`: English and technical, never shown to users
 const serverText = 'server message';

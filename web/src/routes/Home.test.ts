@@ -5,6 +5,7 @@ import { afterEach, describe, expect, test } from 'vitest';
 import { json, stubApi } from '$lib/test/api';
 import { TodoList, type Todo } from '$lib/todos.svelte';
 import Home from './Home.svelte';
+import { defined } from '$lib/test/defined';
 
 const milk: Todo = { id: 1, title: 'buy milk', done: false };
 const bread: Todo = { id: 2, title: 'bake bread', done: true };
@@ -23,7 +24,7 @@ function later() {
 	const response = new Promise<Response>((resolve) => (answer = resolve));
 	return { response, answer };
 }
-const item = (title: string) => screen.getByText(title).closest('li')!;
+const item = (title: string) => defined(screen.getByText(title).closest('li'));
 const loaded = () => screen.findByRole('list');
 
 afterEach(() => {

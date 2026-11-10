@@ -1,19 +1,14 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { getLocale, localStorageKey, setLocale } from '$lib/paraglide/runtime.js';
 import { m } from '$lib/paraglide/messages.js';
+import { blockStorage } from '$lib/test/storage';
 import { detectLocale } from './i18n.svelte';
 
-const blockStorage = (method: 'getItem' | 'setItem') =>
-	vi.spyOn(Storage.prototype, method).mockImplementation(() => {
-		throw new DOMException('blocked', 'SecurityError');
-	});
 const browserLanguages = (languages: string[]) =>
 	vi.spyOn(navigator, 'languages', 'get').mockReturnValue(languages);
 
 afterEach(() => {
 	vi.restoreAllMocks();
-	void setLocale('en');
-	localStorage.clear();
 });
 
 describe('detectLocale', () => {

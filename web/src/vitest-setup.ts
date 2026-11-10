@@ -1,6 +1,15 @@
 // Adds DOM matchers such as toBeInTheDocument() to expect().
 import '@testing-library/jest-dom/vitest';
 import { afterEach, beforeEach, vi, type MockInstance } from 'vitest';
+// Live locale switching, as in the app (main.ts): setLocale() re-renders instead of reloading.
+import '$lib/i18n.svelte';
+import { setLocale } from '$lib/paraglide/runtime.js';
+
+// Every test starts in English with empty storage (a saved locale or theme would leak).
+afterEach(() => {
+	void setLocale('en');
+	localStorage.clear();
+});
 
 // A test fails if anything logs a warning or an error (Svelte's runtime warnings, jsdom's "Not
 // implemented", a library's console.error). The output is still printed, to see what it was.
@@ -16,7 +25,7 @@ afterEach(() => {
 });
 
 // jsdom has no IntersectionObserver; sv-router uses it to preload visible links.
-globalThis.IntersectionObserver ??= class {
+globalThis.IntersectionObserver = class {
 	observe() {}
 	unobserve() {}
 	disconnect() {}

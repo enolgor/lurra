@@ -15,5 +15,5 @@ export function localeName(locale: string): string {
 export function localeFlag(locale: string): string {
 	const region = String(new Intl.Locale(locale).maximize().region);
 	if (!/^[A-Z]{2}$/.test(region)) return '';
-	return String.fromCodePoint(...[...region].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+	return String.fromCodePoint(...Array.from(region, (c) => 0x1f1e6 + c.charCodeAt(0) - 65));
 }

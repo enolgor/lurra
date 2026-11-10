@@ -1,13 +1,7 @@
 import { render, screen, within } from '@testing-library/svelte';
-import { afterEach, expect, test } from 'vitest';
-import '$lib/i18n.svelte';
+import { expect, test } from 'vitest';
 import { setLocale } from '$lib/paraglide/runtime.js';
 import App from './App.svelte';
-
-afterEach(() => {
-	void setLocale('en');
-	localStorage.clear();
-});
 
 test('has a header with the app title and settings, a main area and a footer', async () => {
 	history.replaceState(null, '', '/');

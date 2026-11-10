@@ -17,12 +17,18 @@ export default defineConfig(
 	// generated: schema.ts by `make bindings`, src/lib/paraglide/ by the Paraglide Vite plugin
 	{ ignores: ['src/lib/api/schema.ts', 'src/lib/paraglide/**'] },
 	js.configs.recommended,
-	ts.configs.recommended,
+	// Type-aware rules (they read the TypeScript types): forgotten `await`s, promises nobody
+	// handles, conditions that are always true, unsafe `any`, needless `!`.
+	ts.configs.strictTypeChecked,
 	svelte.configs.recommended,
 	prettier,
 	svelte.configs.prettier,
 	{
-		languageOptions: { globals: { ...globals.browser, ...globals.node } },
+		languageOptions: {
+			globals: { ...globals.browser, ...globals.node },
+			// the types come from each file's tsconfig (tsconfig.app.json, tsconfig.node.json)
+			parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname }
+		},
 		rules: {
 			// typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
 			// see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
@@ -33,18 +39,11 @@ export default defineConfig(
 		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
 			parserOptions: {
-				projectService: true,
 				extraFileExtensions: ['.svelte'],
 				parser: ts.parser,
 				svelteConfig
 			}
 		}
-	},
-	{
-		// Type-aware rules for app code: catches a forgotten `await` on API calls.
-		files: ['src/**/*.ts', 'src/**/*.svelte'],
-		languageOptions: { parserOptions: { projectService: true } },
-		rules: { '@typescript-eslint/no-floating-promises': 'error' }
 	},
 	{
 		// m[key] defeats Paraglide's tree-shaking (and the typed keys); call m.key() directly.
@@ -69,6 +68,17 @@ export default defineConfig(
 	{
 		// Override or add rule settings here, such as:
 		// 'svelte/button-has-type': 'error'
-		rules: {}
+		rules: {
+			// onclick={() => todos.remove(todo)}: handlers return nothing anyway
+			'@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
+			// numbers in messages (`request ${n}`) are fine
+			'@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }]
+		}
+	},
+	{
+		// Plain JS outside any tsconfig (the tool configs, public/theme.js): no types to check.
+		// Last, so no rule setting above turns a type-aware rule back on for these files.
+		files: ['*.js', 'public/*.js'],
+		extends: [ts.configs.disableTypeChecked]
 	}
 );

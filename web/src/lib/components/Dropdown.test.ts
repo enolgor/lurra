@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { createRawSnippet } from 'svelte';
 import { expect, test } from 'vitest';
 import Dropdown from './Dropdown.svelte';
+import { dropdown, trigger } from '$lib/test/dropdown';
 
 // A menu with a title (not a choice) and one choice button.
 function renderDropdown() {
@@ -14,9 +15,6 @@ function renderDropdown() {
 	});
 	return userEvent.setup();
 }
-
-const dropdown = () => document.querySelector('details')!;
-const trigger = () => document.querySelector('summary')!;
 
 test('opens and closes on its button', async () => {
 	const user = renderDropdown();

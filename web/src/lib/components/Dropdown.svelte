@@ -16,6 +16,7 @@
 
 	let open = $state(false);
 	let dropdown: HTMLDetailsElement;
+	let button: HTMLElement;
 
 	function closeOnClick(event: MouseEvent) {
 		if (!open) return;
@@ -26,14 +27,14 @@
 	function closeOnEscape(event: KeyboardEvent) {
 		if (!open || event.key !== 'Escape') return;
 		open = false;
-		dropdown.querySelector('summary')!.focus();
+		button.focus();
 	}
 </script>
 
 <svelte:window onclick={closeOnClick} onkeydown={closeOnEscape} />
 
 <details class="dropdown dropdown-end" bind:open bind:this={dropdown}>
-	<summary class="btn">{@render trigger()}</summary>
+	<summary class="btn" bind:this={button}>{@render trigger()}</summary>
 	<ul class="menu dropdown-content z-10 w-52 rounded-box bg-base-100 p-2 shadow-sm">
 		{@render children()}
 	</ul>

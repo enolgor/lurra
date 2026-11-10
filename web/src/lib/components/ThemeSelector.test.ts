@@ -1,19 +1,16 @@
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { afterEach, expect, test } from 'vitest';
-import '$lib/i18n.svelte';
 import { setLocale } from '$lib/paraglide/runtime.js';
 import { setTheme } from '$lib/theme.svelte';
 import ThemeSelector from './ThemeSelector.svelte';
+import { trigger } from '$lib/test/dropdown';
 
-const trigger = () => document.querySelector('summary')!;
 const triggerIcon = (name: string) => trigger().querySelector(`.lucide-${name}`);
 const option = (name: string) => screen.getByRole('button', { name });
 
 afterEach(() => {
 	setTheme('system');
-	void setLocale('en');
-	localStorage.clear();
 });
 
 test('a "Theme" button showing the current choice, system by default', () => {
@@ -29,7 +26,7 @@ test('lists light, dark and system, with the current one marked', async () => {
 
 	await user.click(trigger());
 
-	expect(screen.getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
+	expect(screen.getAllByRole('button').map((button) => button.textContent.trim())).toEqual([
 		'Light',
 		'Dark',
 		'System'

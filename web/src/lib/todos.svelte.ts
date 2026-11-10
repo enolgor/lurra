@@ -12,7 +12,10 @@ export type ApiError = components['schemas']['httpx.HTTPError'];
 export const filters = ['all', 'done', 'undone'] as const;
 export type Filter = (typeof filters)[number];
 
-type Result<T> = { data?: T; error?: ApiError };
+/** An openapi-fetch result: `data` when it worked, `error` when the API answered with one. */
+type Result = { data?: unknown; error?: ApiError };
+/** The data of a result that worked (`Todo[]` for GET /todos), without the error case. */
+type DataOf<R extends Result> = Extract<R, { error?: never }>['data'];
 
 export class TodoList {
 	items = $state<Todo[]>([]);
@@ -43,14 +46,14 @@ export class TodoList {
 		this.loading = true;
 		this.loadError = null;
 		const result = await this.#send(() => this.#client.GET('/todos'), 'load');
-		if (result.ok) this.items = result.data!;
+		if (result.ok) this.items = result.data;
 		this.loading = false;
 	}
 
 	/** Each change returns whether it succeeded. */
 	async add(title: string): Promise<boolean> {
 		const result = await this.#send(() => this.#client.POST('/todos', { body: { title } }));
-		if (result.ok) this.items = [...this.items, result.data!];
+		if (result.ok) this.items = [...this.items, result.data];
 		return result.ok;
 	}
 
@@ -81,7 +84,7 @@ export class TodoList {
 			this.#send(() => this.#client.PATCH('/todos/{id}', { params, body }))
 		);
 		if (result.ok)
-			this.items = this.items.map((item) => (item.id === todo.id ? result.data! : item));
+			this.items = this.items.map((item) => (item.id === todo.id ? result.data : item));
 		return result.ok;
 	}
 
@@ -94,14 +97,15 @@ export class TodoList {
 	}
 
 	/** Sends a request; on failure (API error or no connection) records the error and returns not ok. */
-	async #send<T>(
-		request: () => Promise<Result<T>>,
+	async #send<R extends Result>(
+		request: () => Promise<R>,
 		kind: 'load' | 'action' = 'action'
-	): Promise<{ ok: true; data?: T } | { ok: false }> {
+	): Promise<{ ok: true; data: DataOf<R> } | { ok: false }> {
 		let error: ApiError;
 		try {
 			const result = await request();
-			if (!result.error) return { ok: true, data: result.data };
+			// no error means the success case, but TypeScript can't narrow a generic R
+			if (!result.error) return { ok: true, data: result.data as DataOf<R> };
 			error = result.error;
 		} catch (cause) {
 			error = { code: 0, message: String(cause) };
