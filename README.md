@@ -1,3 +1,7 @@
+[![ci](https://github.com/enolgor/lurra/actions/workflows/ci.yml/badge.svg)](https://github.com/enolgor/lurra/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/enolgor/lurra/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/enolgor/lurra/actions/workflows/github-code-scanning/codeql)
+[![security](https://github.com/enolgor/lurra/actions/workflows/security.yml/badge.svg)](https://github.com/enolgor/lurra/actions/workflows/security.yml)
+
 # lurra
 
 A full-stack project template: a Go API and a Svelte 5 single-page app, shipped together as one
