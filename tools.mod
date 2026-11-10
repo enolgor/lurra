@@ -261,7 +261,7 @@ require (
 	github.com/urfave/cli/v2 v2.27.5 // indirect
 	github.com/uudashr/gocognit v1.3.0 // indirect
 	github.com/uudashr/iface v1.5.3 // indirect
-	github.com/vladopajic/go-test-coverage/v2 v2.21.0 // indirect
+	github.com/vladopajic/go-test-coverage/v2 v2.23.0 // indirect
 	github.com/xen0n/gosmopolitan v1.3.0 // indirect
 	github.com/xo/terminfo v1.0.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
