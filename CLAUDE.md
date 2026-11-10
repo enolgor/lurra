@@ -73,7 +73,8 @@ doesn't cover yet, with the check to add. Run `make ci` first; then check:
   Makefile); nothing is duplicated or in the wrong section (all npm deps are dev); `npm ls` and
   the lockfiles agree; `make security` advisories are known.
 - **Leftovers:** dead files, empty dirs, unused exports or components, commented-out code,
-  `TODO`/`FIXME`, demo content, config or comments for removed tools.
+  `TODO`/`FIXME`, demo content, config or comments for removed tools. Look in every tracked
+  file, not just source: the Dockerfile, Makefile and configs too.
 - **Generated code:** only in its known places (`schema.ts`, `src/lib/paraglide/`, `dist/`),
   ignored by Prettier, ESLint, coverage and `.dockerignore`, untracked unless meant to be.
 - **Consistency:** the same thing is named and done the same way everywhere (imports via `$lib`,

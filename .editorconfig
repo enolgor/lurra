@@ -1,0 +1,21 @@
+# Editor defaults for any editor (https://editorconfig.org). gofmt and Prettier (web/) still
+# decide the formatting; this only keeps editors from fighting them.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+
+# YAML can't use tabs; TOML and the JSON outside Prettier's reach use 2 spaces too
+[{*.{yml,yaml,toml},.vscode/*.json,.github/*.json,web/project.inlang/*.json}]
+indent_style = space
+indent_size = 2
+
+# Markdown: two trailing spaces are a line break
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false

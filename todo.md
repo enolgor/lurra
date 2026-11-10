@@ -91,6 +91,10 @@ Open questions:
   for it, and Tailwind prints CSS warnings with a bare `console.warn`). `npm run build` alone
   doesn't fail. daisyUI's `join` triggers two "Invalid empty selector" warnings, so the add form
   in `routes/Home.svelte` uses `flex gap-2`; try `join` again after daisyUI or Tailwind updates.
+- No end-to-end tests (e.g. Playwright), on purpose: each piece is tested on its own (Go
+  handlers and server, web components and state), but nothing tests them together in a browser.
+  Check what only shows up there (the embedded SPA, the CSP, the SPA fallback) by hand with
+  `make debug` or the built binary.
 - About half of `make test-web` is jsdom setup, one per test file. Vitest suggests
   `pool: 'vmThreads'` or `isolate: false`; both are left off on purpose: `isolate: false` leaks
   state between files (locale, `localStorage`, URL), and `vmThreads` has known memory issues.
