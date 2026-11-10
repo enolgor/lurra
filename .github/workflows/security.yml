@@ -1,0 +1,39 @@
+# Known vulnerabilities in Go and npm dependencies (`make security`). Separate from ci and not a
+# required check, so a new advisory in some dependency doesn't block unrelated PRs.
+name: security
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC: advisories appear without any push
+  workflow_dispatch: # "Run workflow" button
+  pull_request:
+    # only changes that can bring in a vulnerable dependency (Renovate's PRs included)
+    paths:
+      - go.mod
+      - go.sum
+      - tools.mod
+      - tools.sum
+      - web/package-lock.json
+      - .github/workflows/security.yml
+
+permissions:
+  contents: read
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          # no cache: it would have ci's key (same go.sum and tools.sum) but hold only what
+          # govulncheck needs, and if saved first it would be the one ci restores every run
+          cache: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: web/package.json # reads devEngines.runtime
+      # no `make setup`: govulncheck builds on demand, and npm audit reads only the lockfile
+      - run: make security

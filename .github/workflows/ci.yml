@@ -1,0 +1,74 @@
+# The PR checks: one job per `make ci` target, so each shows as its own check, they run in
+# parallel, and a failed one can be rerun alone. Locally, `make ci` runs the same targets in one go.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # a new push to a PR replaces its running checks; every push to main is checked to the end
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # one failure doesn't cancel the other checks
+      matrix:
+        # Keep in sync with `ci` in the Makefile.
+        target: [check-go, check-web, check-i18n, check-workflows, test-go, test-web, build]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            tools.sum
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: web/package.json # reads devEngines.runtime
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: make setup ${{ matrix.target }}
+        env:
+          GOTESTSUM_FORMAT: github-actions # test-go: a collapsible group per package
+      # test-go: the Go results and coverage as tables in the job summary (scripts in
+      # .github/scripts). Tests: also when some failed. Coverage: go-test-coverage writes its
+      # breakdown before checking the thresholds, so it's there when coverage fails, but not
+      # when a test failed (it didn't run).
+      - if: always() && matrix.target == 'test-go' && hashFiles('.tmp/go-test.json') != ''
+        run: jq -rs --arg module "$(go list -m)" -f .github/scripts/go-tests.jq .tmp/go-test.json >> "$GITHUB_STEP_SUMMARY"
+      - if: always() && matrix.target == 'test-go' && hashFiles('.tmp/coverage-go.txt') != ''
+        run: sort .tmp/coverage-go.txt | awk -F';' -f .github/scripts/go-coverage.awk >> "$GITHUB_STEP_SUMMARY"
+
+  # Builds the image (nothing is pushed), so a Dockerfile that misses a new Go dir fails here.
+  # Not part of `make ci`: it needs Docker and takes minutes, and `make ci` needs only Go and Node.
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: make docker
+
+  # The one check to require on main: passes only if every check above did, so adding or
+  # renaming a target doesn't change GitHub's branch settings.
+  ci:
+    if: always()
+    needs: [check, docker]
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          CHECK: ${{ needs.check.result }}
+          DOCKER: ${{ needs.docker.result }}
+        run: test "$CHECK" = success && test "$DOCKER" = success

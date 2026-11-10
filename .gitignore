@@ -1,0 +1,41 @@
+# Go binaries and test output
+*.exe
+*.test
+*.out
+go.work
+go.work.sum
+
+# Build output and scratch files (coverage, OpenAPI spec)
+bin/
+dist/
+.tmp/
+
+# SQLite database (DB_PATH)
+data/
+
+# Local settings and secrets; .env.example is the committed template
+.env
+.env.*
+!.env.example
+*.local
+
+# Web dependencies and tool caches
+node_modules/
+*.tsbuildinfo
+.eslintcache
+vite.config.ts.timestamp-*
+
+# Logs
+*.log
+
+# Claude Code local state
+.claude/
+
+# Editors and OS; the shared VS Code settings are committed
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+.DS_Store
+*.sw?

@@ -1,0 +1,56 @@
+package model
+
+import (
+	"context"
+	"errors"
+	"strings"
+)
+
+// TodoStore persists todos. Methods return ErrNotFound (wrapped) for unknown IDs.
+// Implementations live in internal/store, e.g. sqlite.Store.
+type TodoStore interface {
+	ListTodos(ctx context.Context) ([]Todo, error)
+	CreateTodo(ctx context.Context, title string) (Todo, error)
+	ReadTodo(ctx context.Context, id int) (Todo, error)
+	UpdateTodo(ctx context.Context, id int, u UpdateTodo) (Todo, error)
+	DeleteTodo(ctx context.Context, id int) error
+}
+
+// Todo is a stored todo item.
+type Todo struct {
+	ID    int    `json:"id" example:"1" format:"int64" validate:"required"`
+	Title string `json:"title" example:"buy milk" validate:"required"`
+	Done  bool   `json:"done" example:"false" validate:"required"`
+}
+
+var (
+	ErrNotFound     = errors.New("not found")
+	ErrTitleInvalid = errors.New("title is empty")
+)
+
+// CreateTodo is the body for creating a todo.
+type CreateTodo struct {
+	Title string `json:"title" example:"buy milk" validate:"required"`
+}
+
+// Validation checks the fields of a new todo.
+func (c CreateTodo) Validation() error {
+	if strings.TrimSpace(c.Title) == "" {
+		return ErrTitleInvalid
+	}
+	return nil
+}
+
+// UpdateTodo is the body for updating a todo; nil fields are left unchanged.
+type UpdateTodo struct {
+	Title *string `json:"title,omitempty" example:"buy milk"`
+	Done  *bool   `json:"done,omitempty" example:"true"`
+}
+
+// Validation checks the fields that are set.
+func (u UpdateTodo) Validation() error {
+	if u.Title != nil && strings.TrimSpace(*u.Title) == "" {
+		return ErrTitleInvalid
+	}
+	return nil
+}

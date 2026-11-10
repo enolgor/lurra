@@ -1,0 +1,62 @@
+{
+	"name": "web",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"devEngines": {
+		"runtime": {
+			"name": "node",
+			"version": "^24.14.0",
+			"onFail": "error"
+		}
+	},
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "npm run i18n:compile --silent -- --silent && svelte-check --tsconfig ./tsconfig.app.json --fail-on-warnings && tsc -p tsconfig.node.json",
+		"lint": "prettier --check . && eslint . --max-warnings 0",
+		"test": "vitest run --coverage",
+		"format": "prettier --write .",
+		"i18n:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide",
+		"i18n:check": "inlang check --project ./project.inlang",
+		"i18n:translate": "inlang machine translate --project ./project.inlang"
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@fontsource-variable/inter": "^5.3.0",
+		"@inlang/cli": "^3.4.0",
+		"@inlang/paraglide-js": "^3.2.1",
+		"@inlang/plugin-m-function-matcher": "^2.4.3",
+		"@inlang/plugin-message-format": "^4.6.0",
+		"@lucide/svelte": "^1.70.0",
+		"@sveltejs/vite-plugin-svelte": "^7.3.1",
+		"@tailwindcss/vite": "^4.3.0",
+		"@testing-library/jest-dom": "^7.0.1",
+		"@testing-library/svelte": "^5.4.2",
+		"@testing-library/user-event": "^14.6.8",
+		"@tsconfig/svelte": "^5.0.8",
+		"@types/node": "^24.19.2",
+		"@vitest/coverage-v8": "^5.1.0",
+		"daisyui": "^5.7.50",
+		"eslint": "^10.4.1",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-better-tailwindcss": "^4.10.0",
+		"eslint-plugin-svelte": "^3.19.0",
+		"globals": "^17.6.0",
+		"jsdom": "^29.1.1",
+		"openapi-fetch": "^0.17.0",
+		"openapi-typescript": "^7.13.0",
+		"prettier": "^3.8.3",
+		"prettier-plugin-svelte": "^4.1.0",
+		"prettier-plugin-tailwindcss": "^0.8.0",
+		"sv-router": "^0.19.0",
+		"svelte": "^5.57.3",
+		"svelte-check": "^4.7.7",
+		"tailwindcss": "^4.3.0",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.60.1",
+		"vite": "^8.3.6",
+		"vitest": "^5.1.0"
+	}
+}

@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@plugin 'daisyui' {
+	logs: false; /* no banner in every format, lint and test run */
+}
+
+/* Inter (self-hosted by @fontsource) as the default font */
+@theme {
+	--font-sans: 'Inter Variable', sans-serif;
+}

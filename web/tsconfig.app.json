@@ -1,0 +1,40 @@
+{
+	"extends": "@tsconfig/svelte/tsconfig.json",
+	"compilerOptions": {
+		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+		"target": "es2023",
+		"module": "esnext",
+		"types": ["svelte", "vite/client"],
+		"allowArbitraryExtensions": true,
+		"noEmit": true,
+		// $lib and $routes aliases, also set in vite.config.ts (SvelteKit provides $lib; plain Vite does not)
+		"paths": {
+			"$lib": ["./src/lib"],
+			"$lib/*": ["./src/lib/*"],
+			"$routes/*": ["./src/routes/*"]
+		},
+
+		/**
+		 * Typecheck JS in `.svelte` and `.js` files by default.
+		 * Disable checkJs if you'd like to use dynamic types in JS.
+		 * Note that setting allowJs false does not prevent the use
+		 * of JS in `.svelte` files.
+		 */
+		"allowJs": true,
+		"checkJs": true,
+		"moduleDetection": "force",
+
+		// Stricter than `strict`: array[i] and record[key] may be undefined, every path of a
+		// function returns, no switch fallthrough, `override` on overridden members, and only
+		// syntax Svelte can strip (no `enum`, `namespace` or parameter properties). Unused
+		// variables are left to ESLint (no-unused-vars).
+		"noUncheckedIndexedAccess": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"erasableSyntaxOnly": true
+	},
+	"include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
+	// Paraglide's server runtime (Node's async_hooks); this browser-only app never imports it
+	"exclude": ["src/lib/paraglide/server.js"]
+}

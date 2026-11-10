@@ -1,0 +1,26 @@
+# Config for go-test-coverage, run by `make test-go` right after the Go tests.
+# Docs: https://github.com/vladopajic/go-test-coverage
+
+# Path to the coverage profile, relative to the repo root.
+profile: .tmp/cover.out
+
+# Minimum coverage percentages (0-100). Blocks marked `// coverage-ignore` are not counted.
+threshold:
+  file: 100
+  package: 100
+  total: 100
+
+# Regexp rules for files or packages left out of coverage statistics.
+# Packages without tests are reported at 0%, so a new one fails the thresholds
+# until it gets tests or is excluded here.
+exclude:
+  paths:
+    - ^cmd/ # wiring only; exercised by running the app
+    - ^web/ # serves the built SPA from disk or embedded files
+
+  # Don't count the body of plain `if err != nil { return ..., err }` checks: they only pass
+  # an error up. The condition itself is still counted.
+  single-return-error-checks: true
+
+# Every `// coverage-ignore` must say why, e.g. `// coverage-ignore: <reason>`.
+force-annotation-comment: true

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "postUpdateOptions": ["gomodTidy"],
+  "gomod": {
+    "managerFilePatterns": ["/(^|/)tools\\.mod$/"]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Versions pinned in the Makefile under a `# renovate: datasource=… depName=…` comment",
+      "managerFilePatterns": ["/(^|/)Makefile$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n[A-Z_]+\\s*:?=\\s*(?<currentValue>\\S+)"
+      ]
+    }
+  ],
+  "packageRules": [
+    {
+      "matchDepNames": ["go"],
+      "matchDepTypes": ["golang"],
+      "rangeStrategy": "bump"
+    },
+    {
+      "description": "@types/node matches the Node runtime (devEngines in web/package.json): bump its major by hand together with Node's",
+      "matchPackageNames": ["@types/node"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ]
+}
