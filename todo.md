@@ -82,7 +82,9 @@
   `make debug` or the built binary.
 - CI (`.github/workflows/ci.yml`) runs each `make ci` target as its own job, so they show as
   separate PR checks and run in parallel, plus `docker`, which only CI runs (it needs Docker).
-  Locally, `make ci` runs the same checks in one go. Require only the `ci` job on `main`.
+  Locally, `make ci` runs the same checks in one go. Require only the `ci` job on `main`. Test
+  results show in each run's summary: Vitest's report by itself, Go's through
+  `robherley/go-test-action` (it reads gotestsum's JSON, `.tmp/go-test.json`).
   `security.yml` runs weekly, on demand and on dependency changes, and isn't required, so a new
   advisory doesn't block unrelated PRs.
 - In CI, actionlint also runs shellcheck on the workflows' `run:` scripts (GitHub's runners have

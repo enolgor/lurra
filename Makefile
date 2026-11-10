@@ -41,6 +41,8 @@ API_SCHEMA_PATH := $(WEB_DIR)/src/lib/api/schema.ts
 API_INFO_PATH   := internal/api/api.go
 TMP_DIR         := .tmp
 COVER_PROFILE   := $(TMP_DIR)/cover.out
+# Go test results (gotestsum's JSON); CI's job summary reads it (ci.yml)
+GO_TEST_JSON    := $(TMP_DIR)/go-test.json
 BIN_DIR         := bin
 BIN_NAME        := app
 CMD_PATH        := ./cmd/$(BIN_NAME)
@@ -103,7 +105,7 @@ test-go: ## Go tests with the race detector, then coverage thresholds (.testcove
 	$(STAGE)
 	@mkdir -p $(TMP_DIR)
 	@# gotestsum runs go test with the flags after --; GOTESTSUM_FORMAT picks the output (CI: github-actions)
-	@$(GO_TOOL) gotestsum -- -race -shuffle=on -coverprofile=$(COVER_PROFILE) ./...
+	@$(GO_TOOL) gotestsum --jsonfile $(GO_TEST_JSON) -- -race -shuffle=on -coverprofile=$(COVER_PROFILE) ./...
 	@$(GO_TOOL) go-test-coverage -c .testcoverage.yml -p $(COVER_PROFILE)
 
 stress: ## Run concurrency tests repeatedly under the race detector

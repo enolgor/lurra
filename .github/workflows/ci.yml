@@ -42,6 +42,12 @@ jobs:
       - run: make setup ${{ matrix.target }}
         env:
           GOTESTSUM_FORMAT: github-actions # test-go: a collapsible group per package
+      # test-go: the Go results as a table in the job summary, also when tests failed
+      - if: always() && matrix.target == 'test-go' && hashFiles('.tmp/go-test.json') != ''
+        uses: robherley/go-test-action@2f859e0c8769d755d3174eecb9af8f64660827f3 # v1.1.0
+        with:
+          fromJSONFiles: .tmp/go-test.json # GO_TEST_JSON in the Makefile
+          omit: untested # cmd/app and web have no tests of their own
 
   # Builds the image (nothing is pushed), so a Dockerfile that misses a new Go dir fails here.
   # Not part of `make ci`: it needs Docker and takes minutes, and `make ci` needs only Go and Node.
