@@ -6,7 +6,6 @@
       there: Renovate reads `.github/renovate.json` from `main`, so it starts right away, with no
       onboarding PR. Check its "Dependency Dashboard" issue lists `tools.mod`, the pinned actions
       and `ACTIONLINT_VERSION` from the Makefile.
-- [ ] devcontainers json?
 - [ ] **Write the README** once the template is done, and merge this file into it. One README
       with everything: what the template is, requirements (Go, Node), quick start
       (`make setup`, `make dev`), the existing "Before deploying" notes, and this "Good to know"
@@ -120,5 +119,7 @@
 
 ## Future ideas
 
+ - [ ] devcontainer (`.devcontainer/devcontainer.json`: Go and Node, the VS Code extensions,
+   `make setup` on create, ports 8080 and 5173)
  - [ ] go get -tool github.com/getsops/sops/v3/cmd/sops@latest
  - [ ] jwt chi + oidc for auth
