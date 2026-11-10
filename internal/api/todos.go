@@ -89,11 +89,11 @@ func (c *Controller) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var updateTodo model.UpdateTodo
-	if err := httpx.Decode(r, &updateTodo); err != nil {
+	if err = httpx.Decode(r, &updateTodo); err != nil {
 		writeError(w, r, err)
 		return
 	}
-	if err := updateTodo.Validation(); err != nil {
+	if err = updateTodo.Validation(); err != nil {
 		writeError(w, r, err)
 		return
 	}

@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/driver" // registers the "sqlite3" database/sql driver
 )
 
 // Store keeps data in a SQLite database and is safe for concurrent use.

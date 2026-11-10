@@ -77,6 +77,9 @@ linters:
       # also shadow, nilness and the rest; fieldalignment only reorders struct fields
       enable-all: true
       disable: [fieldalignment]
+    nolintlint:
+      require-specific: true # //nolint:gocritic, not a bare //nolint
+      require-explanation: true # //nolint:gocritic // why
     sloglint:
       # slog.*Context whenever a context is in scope, so log lines carry request_id
       context: scope

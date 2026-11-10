@@ -25,7 +25,7 @@ func TestOpen_Errors(t *testing.T) {
 		if err != nil {
 			t.Fatalf("open db: %v", err)
 		}
-		if _, err = db.Exec(`CREATE TABLE todos (x INTEGER)`); err != nil {
+		if _, err = db.ExecContext(t.Context(), `CREATE TABLE todos (x INTEGER)`); err != nil {
 			t.Fatalf("create todos table: %v", err)
 		}
 		if err = db.Close(); err != nil {
@@ -153,7 +153,7 @@ func TestStore_CRUD(t *testing.T) {
 		t.Errorf("after title update = %+v, want %+v", updated, want)
 	}
 
-	if err := store.DeleteTodo(ctx, created.ID); err != nil {
+	if err = store.DeleteTodo(ctx, created.ID); err != nil {
 		t.Fatalf("delete: %v", err)
 	}
 	todos, err := store.ListTodos(ctx)

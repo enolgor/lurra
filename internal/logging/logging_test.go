@@ -53,10 +53,12 @@ func TestWithRequestID_Slogtest(t *testing.T) {
 	var buf bytes.Buffer
 	slogtest.Run(t,
 		func(t *testing.T) slog.Handler {
+			t.Helper()
 			buf.Reset()
 			return logging.WithRequestID(slog.NewJSONHandler(&buf, nil))
 		},
 		func(t *testing.T) map[string]any {
+			t.Helper()
 			return decode(t, &buf)
 		},
 	)

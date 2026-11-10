@@ -1,4 +1,4 @@
-package main
+package main //nolint:revive // shouldn't be imported by other modules
 
 import (
 	"context"

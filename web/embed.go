@@ -1,6 +1,6 @@
 //go:build embed
 
-package web
+package web //nolint:revive // shouldn't be imported by other modules
 
 import (
 	"embed"
