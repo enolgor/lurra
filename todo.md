@@ -2,9 +2,10 @@
 
 - [ ] **Make `ci` a required check on `main`** once the repo is on GitHub (Settings → Rules →
       require status checks: `ci`). It's the job that passes only when every other check did.
-- [ ] **Install the Renovate app** when publishing. The config is in `.github/renovate.json`.
-      Check that the onboarding PR detects `tools.mod`. Add a rule so `@types/node` stays on the
-      Node runtime's major (24, from `devEngines`) instead of jumping to the latest.
+- [ ] **Install the Renovate app** after the first PR is merged into `main` and `ci` is required
+      there: Renovate reads `.github/renovate.json` from `main`, so it starts right away, with no
+      onboarding PR. Check its "Dependency Dashboard" issue lists `tools.mod`, the pinned actions
+      and `ACTIONLINT_VERSION` from the Makefile.
 - [ ] devcontainers json?
 - [ ] **Write the README** once the template is done, and merge this file into it. One README
       with everything: what the template is, requirements (Go, Node), quick start
@@ -42,7 +43,8 @@
   provider) needs it added there. `make dev` serves through Vite without the CSP, so check
   CSP problems with `make debug` or the built binary.
 - Node is pinned with `devEngines.runtime` in `web/package.json` (`"onFail": "error"`). When
-  Renovate bumps it, keep it on an LTS release.
+  Renovate bumps it, keep it on an LTS release. `@types/node` majors are off in Renovate (they'd
+  describe a newer Node than the one we run): bump that major by hand together with Node's.
 - The SPA fallback (`internal/server/spa.go`) serves `index.html` for any path without a file
   extension, so client routes must not contain dots (`/users/john.doe` gets a 404). Missing
   files and anything under `/api/` return 404, never the SPA.

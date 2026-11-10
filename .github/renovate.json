@@ -20,6 +20,12 @@
       "matchDepNames": ["go"],
       "matchDepTypes": ["golang"],
       "rangeStrategy": "bump"
+    },
+    {
+      "description": "@types/node matches the Node runtime (devEngines in web/package.json): bump its major by hand together with Node's",
+      "matchPackageNames": ["@types/node"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     }
   ]
 }
