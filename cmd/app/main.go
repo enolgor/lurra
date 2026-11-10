@@ -2,6 +2,7 @@ package main //nolint:revive // shouldn't be imported by other modules
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -23,10 +24,19 @@ var version = "dev"
 const shutdownTimeout = 5 * time.Second
 
 func main() {
+	if err := run(); err != nil {
+		slog.Error("exiting", "error", err)
+		os.Exit(1)
+	}
+	slog.Info("stopped")
+}
+
+// run starts the app and blocks until a signal stops it (nil) or something fails (the error).
+// It returns instead of calling os.Exit, so every deferred cleanup runs on every path.
+func run() error {
 	cfg, err := config.Load()
 	if err != nil {
-		slog.Error("loading config", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("loading config: %w", err)
 	}
 
 	logger := slog.New(logging.WithRequestID(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: cfg.LogLevel})))
@@ -40,9 +50,15 @@ func main() {
 
 	store, err := sqlite.Open(ctx, cfg.DBPath)
 	if err != nil {
-		slog.Error("opening store", "path", cfg.DBPath, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("opening store %s: %w", cfg.DBPath, err)
 	}
+	// Deferred calls run last-in first-out: this one runs after the server has shut down below,
+	// once nothing uses the store any more.
+	defer func() {
+		if closeErr := store.Close(); closeErr != nil {
+			slog.Error("closing store", "error", closeErr)
+		}
+	}()
 	c := api.New(store)
 
 	srv := server.New(cfg.Port, logger, c, web.Dist())
@@ -52,8 +68,7 @@ func main() {
 
 	select {
 	case err := <-errCh:
-		slog.Error("server stopped", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("server stopped: %w", err)
 	case <-ctx.Done():
 	}
 
@@ -64,10 +79,5 @@ func main() {
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		slog.Error("shutting down server", "error", err)
 	}
-	// Close other services after the server, which stops using them once it has shut down.
-	if err := store.Close(); err != nil {
-		slog.Error("closing store", "error", err)
-	}
-
-	slog.Info("stopped")
+	return nil
 }
