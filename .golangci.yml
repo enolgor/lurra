@@ -1,0 +1,91 @@
+version: "2"
+
+# Every linter is listed by what it catches. Left out on purpose: linters for libraries this
+# project doesn't use, ones that need an allow/deny list, complexity metrics, and opinionated
+# style (blank lines, tag alignment, name length, line length).
+linters:
+  # standard: errcheck, govet, ineffassign, staticcheck, unused
+  default: standard
+  enable:
+    # bugs
+    - asasalint # []any passed as a single any to a variadic ...any
+    - bidichk # invisible Unicode direction characters (Trojan Source)
+    - durationcheck # two time.Durations multiplied together
+    - fatcontext # contexts nested in loops
+    - forcetypeassert # x.(T) without ", ok", which panics
+    - gocheckcompilerdirectives # malformed //go: directives
+    - makezero # append to a slice made with a non-zero length
+    - nilerr # returning nil after checking err != nil
+    - nilnesserr # returning a different, nil error after checking err != nil
+    - nilnil # returning nil, nil from a (value, error) func
+    - nosprintfhostport # host:port built with Sprintf, which breaks IPv6
+    - reassign # reassigning package variables of other packages (e.g. io.EOF)
+    - recvcheck # methods mixing value and pointer receivers
+    - wastedassign # assignments overwritten before use
+    # HTTP, context, SQL, JSON
+    - bodyclose # unclosed HTTP response bodies
+    - canonicalheader # non-canonical HTTP header names
+    - containedctx # a context stored in a struct
+    - contextcheck # a function that drops the context it was given
+    - errchkjson # ignored or pointless JSON encoding errors
+    - musttag # structs (un)marshaled without json tags
+    - noctx # HTTP and SQL calls without a context
+    - rowserrcheck # missing rows.Err() after iterating sql.Rows
+    - sqlclosecheck # sql.Rows and sql.Stmt never closed
+    - unqueryvet # SELECT * in SQL
+    # errors
+    - err113 # errors.New in functions instead of sentinel errors
+    - errname # error types and sentinel errors follow Go's naming
+    - errorlint # errors.Is/As and %w instead of == and %v
+    # design
+    - exhaustive # switches over enums cover every value
+    - gochecknoinits # init() functions
+    - gochecksumtype # switches over sum types cover every case
+    - iface # duplicate or pointless interfaces
+    - inamedparam # unnamed parameters in interface methods
+    - nakedret # naked returns in long functions
+    - unparam # parameters and results that are always the same
+    # modern Go
+    - copyloopvar # leftover v := v loop copies (not needed since Go 1.22)
+    - exptostd # golang.org/x/exp functions that are in the standard library now
+    - intrange # for i := range n instead of counting loops
+    - mirror # bytes/strings pairs (e.g. strings.Builder.Write([]byte(s)))
+    - modernize # newer standard library and language features
+    - usestdlibvars # http.MethodGet, http.StatusOK instead of literals
+    - usetesting # t.Context(), t.TempDir(), t.Setenv() in tests
+    # tests
+    - testableexamples # examples have an // Output: comment
+    - thelper # test helpers call t.Helper()
+    - tparallel # inconsistent t.Parallel() use
+    # hygiene
+    - asciicheck # non-ASCII identifiers
+    - dupword # doubled words ("the the")
+    - goconst # repeated strings that should be a constant
+    - gocritic # assorted bugs and simplifications
+    - goprintffuncname # printf-like functions end in f
+    - gosec # security problems
+    - misspell # misspelled English words in comments and strings
+    - nolintlint # //nolint comments must name a linter and still be needed
+    - perfsprint # fmt.Sprintf where a cheaper call does the same
+    - predeclared # names that shadow built-ins (len, new, error)
+    - revive # Go conventions (golint's successor, default rules): doc comments, naming, errors
+    - sloglint # consistent slog calls
+    - unconvert # unnecessary type conversions
+    - whitespace # blank lines at the start or end of blocks
+  settings:
+    govet:
+      # also shadow, nilness and the rest; fieldalignment only reorders struct fields
+      enable-all: true
+      disable: [fieldalignment]
+    sloglint:
+      # slog.*Context whenever a context is in scope, so log lines carry request_id
+      context: scope
+  exclusions:
+    rules:
+      # test fixtures: fake credentials, loose file permissions, inline errors, repeated strings
+      - path: _test\.go
+        linters: [gosec, err113, goconst]
+      # internal/ can't be imported by other modules: no doc comments required
+      - path: ^internal/
+        linters: [revive]
+        text: "^(exported|package-comments):"

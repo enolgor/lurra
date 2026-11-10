@@ -17,6 +17,10 @@
 - Run `make bindings` after changing the API. `schema.ts` does not update during `make dev`.
 - Format by hand with `gofmt -w .`. `go fmt ./...` skips `web/embed.go` because of its build tag.
   Format the web code with `npm --prefix web run format`.
+- golangci-lint (`.golangci.yml`) runs only in `make check-go`, not in VS Code: it's a Go tool in
+  `tools.mod`, and the Go extension's `go.alternateTools` needs an executable, not a command. To
+  lint on save, add a script that runs `go tool -modfile=tools.mod golangci-lint "$@"` and point
+  `"go.lintTool": "golangci-lint-v2"` and `go.alternateTools` at it.
 - Only `make build` embeds the UI. A plain `go build` reads `web/dist` from disk.
 - Copy `.env.example` to `.env` for local settings. Real environment variables take precedence.
 - Never edit an applied migration; add a new one. Goose skips versions it has already applied.
@@ -64,6 +68,10 @@
   follows the system. `src/lib/theme.svelte.ts` saves the choice in `localStorage` under the
   `theme` key, and `public/theme.js` (a plain `<script>` in `index.html`, allowed by the CSP)
   applies it before the first paint. Keep the key in sync; a test checks both use it.
+- `make build` fails if the web build prints any warning (it checks the output; Vite has no flag
+  for it, and Tailwind prints CSS warnings with a bare `console.warn`). `npm run build` alone
+  doesn't fail. daisyUI's `join` triggers two "Invalid empty selector" warnings, so the add form
+  in `routes/Home.svelte` uses `flex gap-2`; try `join` again after daisyUI or Tailwind updates.
 
 ## Stack
 

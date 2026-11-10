@@ -58,14 +58,14 @@
 
 <h1 class="mb-4 text-2xl font-bold">{m.home_title()}</h1>
 
-<form class="join mb-4 w-full" onsubmit={add}>
+<form class="mb-4 flex w-full gap-2" onsubmit={add}>
 	<input
-		class="input join-item w-full"
+		class="input w-full"
 		bind:value={newTitle}
 		placeholder={m.todo_new_placeholder()}
 		aria-label={m.todo_new_label()}
 	/>
-	<button class="btn join-item btn-primary" disabled={!newTitle.trim()}>{m.todo_add()}</button>
+	<button class="btn btn-primary" disabled={!newTitle.trim()}>{m.todo_add()}</button>
 </form>
 
 <div role="tablist" aria-label={m.filter_label()} class="tabs tabs-border mb-2">

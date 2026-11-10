@@ -168,7 +168,10 @@ debug: ## Build the SPA with source maps, then run the API under Delve (headless
 
 build: ## Compile the binary with the SPA embedded
 	$(STAGE)
-	@npm --prefix $(WEB_DIR) run build
+	@# vite has no fail-on-warnings flag, and Tailwind prints CSS warnings with a bare console.warn
+	@out=$$(npm --prefix $(WEB_DIR) run build 2>&1); status=$$?; echo "$$out"; \
+	[ $$status -eq 0 ] || exit $$status; \
+	! echo "$$out" | grep -qi 'warning' || { echo "build: the web build printed warnings, see above"; exit 1; }
 	@CGO_ENABLED=0 go build -v -trimpath -tags embed -ldflags "-s -w -X main.version=$(VERSION)" -o $(BIN_DIR)/$(BIN_NAME) $(CMD_PATH)
 	@echo "build: ok ($(VERSION))"
 
