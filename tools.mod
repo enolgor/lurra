@@ -17,7 +17,7 @@ require (
 	github.com/go-chi/chi/v5 v5.5.0
 	github.com/go-chi/httplog/v3 v3.5.0
 	github.com/joho/godotenv v1.5.1
-	github.com/ncruces/go-sqlite3 v0.36.0
+	github.com/ncruces/go-sqlite3 v0.37.0
 	github.com/pressly/goose/v3 v3.29.0
 )
 
@@ -203,7 +203,7 @@ require (
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/nakabonne/nestif v0.3.1 // indirect
 	github.com/narqo/go-badge v0.0.0-20230821190521-c9a75c019a59 // indirect
-	github.com/ncruces/go-sqlite3-wasm/v6 v6.4.35401 // indirect
+	github.com/ncruces/go-sqlite3-wasm/v6 v6.5.35401 // indirect
 	github.com/ncruces/julianday v1.0.0 // indirect
 	github.com/nishanths/exhaustive v0.15.0 // indirect
 	github.com/nishanths/predeclared v0.3.0 // indirect
