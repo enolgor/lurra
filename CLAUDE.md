@@ -13,7 +13,8 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
   `src/lib/components/`, shared test helpers and fixtures in `src/lib/test/`. Reuse what's there
   (e.g. menus build on the existing dropdown components) before adding new.
 - `.github/workflows/`: `ci.yml` runs each `make ci` target as its own job (plus `docker`, CI
-  only) and a `ci` job that passes when all do; `security.yml` runs `make security`.
+  only) and a `ci` job that passes when all do; `security.yml` runs `make security`. Scripts
+  the workflows run (job summaries) live in `.github/scripts/`, not inline.
 
 ## Workflow
 

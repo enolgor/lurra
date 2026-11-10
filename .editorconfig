@@ -9,8 +9,8 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = tab
 
-# YAML can't use tabs; TOML and the JSON outside Prettier's reach use 2 spaces too
-[{*.{yml,yaml,toml},.vscode/*.json,.github/*.json,web/project.inlang/*.json}]
+# YAML can't use tabs; TOML, the CI scripts and the JSON outside Prettier's reach use 2 spaces too
+[{*.{yml,yaml,toml,jq,awk},.vscode/*.json,.github/*.json,web/project.inlang/*.json}]
 indent_style = space
 indent_size = 2
 

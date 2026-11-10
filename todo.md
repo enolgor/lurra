@@ -83,10 +83,12 @@
 - CI (`.github/workflows/ci.yml`) runs each `make ci` target as its own job, so they show as
   separate PR checks and run in parallel, plus `docker`, which only CI runs (it needs Docker).
   Locally, `make ci` runs the same checks in one go. Require only the `ci` job on `main`. Test
-  results show in each run's summary: Vitest's report by itself, Go's through
-  `robherley/go-test-action` (it reads gotestsum's JSON, `.tmp/go-test.json`).
-  `security.yml` runs weekly, on demand and on dependency changes, and isn't required, so a new
-  advisory doesn't block unrelated PRs.
+  results show in each run's summary: Vitest's report by itself; for Go, a test results table
+  with the output of each failure (`.github/scripts/go-tests.jq`, from gotestsum's JSON) and a
+  coverage table per package (`.github/scripts/go-coverage.awk`, from go-test-coverage's
+  breakdown, its own numbers, with the thresholds from `.testcoverage.yml`). On GitHub, files
+  below the threshold are also annotated on the PR. To preview a summary locally:
+  `sort .tmp/coverage-go.txt | awk -F';' -f .github/scripts/go-coverage.awk`.
 - In CI, actionlint also runs shellcheck on the workflows' `run:` scripts (GitHub's runners have
   it); locally only if shellcheck is installed, so CI's `check-workflows` can be stricter.
 - actionlint isn't in `tools.mod` (its YAML dependency conflicts with another tool's): the
