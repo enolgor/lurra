@@ -96,7 +96,7 @@ doesn't cover yet, with the check to add. Run `make ci` first; then check:
   versions; nothing deprecated, nothing newer missing.
 - **Duplication:** any repeated code (components, helpers, test setups, config) goes under
   *should fix*, with where to extract it.
-- **Docs:** `CLAUDE.md`, `todo.md` and code comments describe the code as it is now.
+- **Docs:** `CLAUDE.md`, `README.md` and code comments describe the code as it is now.
 - **Tests:** behavior is tested, not just lines; every coverage exclude and ignore comment still
   has a valid reason; no skipped tests or leftover debug output.
 - **Git:** no tracked file that should be ignored, nothing ignored that should be tracked.
