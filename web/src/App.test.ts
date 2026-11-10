@@ -48,9 +48,14 @@ test('the browser tab title is the app title, in the current language', async ()
 	expect(document.title).toBe('Tareas');
 });
 
-test.each(['/', '/todos/1'])('renders the page for %s inside main', async (path) => {
+test.each([
+	['/', 'Todos'],
+	['/todos/1', 'Page not found'],
+	['/a/typo', 'Page not found']
+])('renders the page for %s inside main', async (path, heading) => {
 	history.replaceState(null, '', path);
 	render(App);
 
-	expect(await within(screen.getByRole('main')).findByRole('heading', { level: 1 })).toBeVisible();
+	const main = within(screen.getByRole('main'));
+	expect(await main.findByRole('heading', { level: 1, name: heading })).toBeVisible();
 });

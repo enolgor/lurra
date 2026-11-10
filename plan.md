@@ -79,27 +79,23 @@ GitHub CI comes after it (see the end), so CI checks the real app rather than th
 
 ## Steps
 
-1. **Backend error codes**: an optional `error` field in the error response (`httpx`), set by
-   `api.writeError` for errors whose status isn't specific enough (`title_invalid` for now),
-   with tests and `make bindings`.
-2. **Todo data module** (`$lib/todos.svelte.ts`): the list in `$state`, with `load`, `add`,
-   `toggle`, `rename` and `remove` calling `api` and updating the list locally from each
-   response, a loading flag, and the last error; plus the filtered list as a `$derived` of the
-   list and the filter. Tests with a stubbed `fetch`, like `client.test.ts`.
-3. **Error display**: a small component that turns an API error into a translated message (by
-   `error` code, else by status) in a daisyUI alert with the `request_id`, used both inline
-   (load failure, with "Try again") and in a toast (action failures, with a close button).
-   Messages in en/de/es. Tests.
-4. **The page**: replace `Home.svelte`'s demo with the list: an add form (Add disabled while
-   blank), the all / done / undone filter, items with a done checkbox, inline title editing
-   (blank cancels) and a delete button, the loading spinner, "Nothing to do yet" for an empty
-   list, the load-error alert and the action-error toast. All text through `m.key()`, daisyUI
-   classes only. Tests, including that the filter is read from and written to `?filter=` and
-   survives a reload.
-5. **Not-found page and demo leftovers**: a `routes/NotFound.svelte` ("Page not found", a link
-   home) for the catch-all route, with tests; remove the example messages and the unused router
-   exports.
-6. **Docs**: CLAUDE.md layout, todo.md.
+1. ~~**Backend error codes**~~ *(done)*: an optional `error` field in the error response
+   (`httpx.WithErrorCode`), set by `api.writeError` for `title_invalid`; tests; `make bindings`.
+2. ~~**Todo data module**~~ *(done)*: `TodoList` in `$lib/todos.svelte.ts`: load, add, toggle,
+   rename, remove (each returns whether it worked), updated locally from the responses; loading,
+   load and action errors, the filter and its `visible` list, and `busy` (todos with a request in
+   flight). Tests with a stubbed `fetch`.
+3. ~~**Error display**~~ *(done)*: `ApiErrorAlert.svelte`, translated by `error` code, else by
+   status, with the `request_id` and an optional action; used inline ("Try again") and in the
+   toast (close). Messages in en/de/es. Tests.
+4. ~~**The page**~~ *(done)*: `Home.svelte`: add form (Add disabled while blank), all / done / to
+   do tabs synced with `?filter=`, items with checkbox, inline editing and delete (disabled while
+   busy), spinner, "Nothing to do yet" and "No todos here." (filter matches nothing), the
+   load-error alert and the action-error toast. Tests.
+5. ~~**Not-found page and demo leftovers**~~ *(done)*: `NotFound.svelte` for the catch-all route;
+   demo messages and unused router exports removed; the router moved to `$lib/router.ts`, pages
+   imported through the new `$routes` alias.
+6. ~~**Docs**~~ *(done)*: CLAUDE.md (layout, import rule, error codes), this file.
 7. **Final check**: `make ci`, then the user tries it in `make dev` (Go API + Vite together).
 
 Work it the usual way: one step at a time, each one reviewed, with a crossed-off checklist.

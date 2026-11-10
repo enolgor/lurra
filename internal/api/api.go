@@ -25,13 +25,14 @@ func New(todos model.TodoStore) *Controller {
 	return &Controller{todos: todos}
 }
 
-// writeError maps domain errors to HTTP statuses and writes the error response.
+// writeError maps domain errors to HTTP statuses and writes the error response. An error that
+// shares its status with others also gets an error code (listed in httpx.HTTPError's enums).
 func writeError(w http.ResponseWriter, r *http.Request, err error) {
 	switch {
 	case errors.Is(err, model.ErrNotFound):
 		err = httpx.WithStatus(http.StatusNotFound, err)
 	case errors.Is(err, model.ErrTitleInvalid):
-		err = httpx.WithStatus(http.StatusBadRequest, err)
+		err = httpx.WithErrorCode(http.StatusBadRequest, "title_invalid", err)
 	}
 	httpx.NewError(w, r, err)
 }

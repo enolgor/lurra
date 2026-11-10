@@ -289,6 +289,12 @@ export interface components {
         "httpx.HTTPError": {
             /** @example 400 */
             code: number;
+            /**
+             * @description Identifies the error when code alone doesn't (e.g. two kinds of 400).
+             * @example title_invalid
+             * @enum {string}
+             */
+            error?: "title_invalid";
             /** @example title is empty */
             message: string;
             /** @example host/abc123-000001 */

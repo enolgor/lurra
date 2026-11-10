@@ -8,10 +8,12 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
 - `cmd/app`: wiring only. `internal/config` env/.env, `logging` slog handler, `server` router,
   middleware, security headers (CSP) and SPA fallback, `api` handlers, `httpx` JSON/errors,
   `model` types, errors and `TodoStore`, `store/sqlite` store and `migrations/`.
-- `web/`: Svelte 5 + Vite, no SvelteKit. `src/lib/api/client.ts` the one API client (openapi-fetch),
-  `src/router.ts` routes (sv-router) to pages in `src/routes/`, own components in
-  `src/lib/components/` (menus build on `Dropdown.svelte`), i18n in `src/lib/i18n.svelte.ts`,
-  light/dark in `src/lib/theme.svelte.ts` (+ `public/theme.js`). `web/*.go` serves `dist/`.
+- `web/`: Svelte 5 + Vite, no SvelteKit. Pages in `src/routes/` (`Home` the todo list,
+  `NotFound`), routed by `src/lib/router.ts` (sv-router). `src/lib/api/client.ts` the one API
+  client (openapi-fetch), `src/lib/todos.svelte.ts` the todo list state (`TodoList`), own
+  components in `src/lib/components/` (menus build on `Dropdown.svelte`, API errors show through
+  `ApiErrorAlert.svelte`), i18n in `src/lib/i18n.svelte.ts`, light/dark in
+  `src/lib/theme.svelte.ts` (+ `public/theme.js`). `web/*.go` serves `dist/`.
 
 ## Workflow
 
@@ -22,8 +24,8 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
 - Never run `docker build`, containers or the app to verify; the user does that.
 - Run `make bindings` after changing API annotations or request/response types.
   `web/src/lib/api/schema.ts` is generated; never edit it by hand.
-- Import shared code in `web/src/` through `$lib/...`, never `../`; only files in the same folder
-  use `./`.
+- Import shared code in `web/src/` through `$lib/...` and pages through `$routes/...`, never
+  `../`; only files in the same folder use `./`.
 - Translations: every user-visible string in `web/` (text, labels, placeholders, `aria-label`,
   `title`, error messages) goes in `web/messages/en.json` and is used as `m.key()` (never
   `m[key]`); no hardcoded display text, except brand names (`lurra`). Call `m.key()` in markup
@@ -55,7 +57,9 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
   cases, and bug fixes get a regression test, even when coverage is already 100%.
 - New packages need tests or an exclude in `.testcoverage.yml`.
 - Never edit an applied migration; add a new `NNNNN_name.sql` with Up and Down sections.
-- New domain errors need a case in `api.writeError`, otherwise they become a 500.
+- New domain errors need a case in `api.writeError`, otherwise they become a 500. If their status
+  is shared with another error, give them an error code (`httpx.WithErrorCode`, plus the `enums`
+  tag on `HTTPError.ErrorCode`) and a translation in `ApiErrorAlert.svelte`.
 - Log with `slog.*Context(ctx, ...)` so lines carry `request_id`.
 - New Go source dirs must be added to the Dockerfile's explicit `COPY` lines.
 

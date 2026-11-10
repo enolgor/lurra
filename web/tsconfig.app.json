@@ -7,10 +7,11 @@
 		"types": ["svelte", "vite/client"],
 		"allowArbitraryExtensions": true,
 		"noEmit": true,
-		// $lib alias, also set in vite.config.ts (SvelteKit provides it automatically; plain Vite does not)
+		// $lib and $routes aliases, also set in vite.config.ts (SvelteKit provides $lib; plain Vite does not)
 		"paths": {
 			"$lib": ["./src/lib"],
-			"$lib/*": ["./src/lib/*"]
+			"$lib/*": ["./src/lib/*"],
+			"$routes/*": ["./src/routes/*"]
 		},
 
 		/**

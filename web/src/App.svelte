@@ -5,7 +5,7 @@
 	import ThemeSelector from '$lib/components/ThemeSelector.svelte';
 	import HouseIcon from '@lucide/svelte/icons/house';
 	import { m } from '$lib/paraglide/messages.js';
-	import { p } from './router';
+	import { p } from '$lib/router';
 
 	// the browser tab title, in the current language (index.html has the English one)
 	$effect(() => {

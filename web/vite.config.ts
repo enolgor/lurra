@@ -18,9 +18,9 @@ export default defineConfig({
 		svelte(),
 		svelteTesting()
 	],
-	// $lib alias, also set in tsconfig.app.json
+	// $lib (shared code) and $routes (pages) aliases, also set in tsconfig.app.json
 	resolve: {
-		alias: { $lib: path.resolve('./src/lib') }
+		alias: { $lib: path.resolve('./src/lib'), $routes: path.resolve('./src/routes') }
 	},
 	server: {
 		// lets `npm run dev` talk to the go server without CORS

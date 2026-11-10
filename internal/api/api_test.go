@@ -37,15 +37,16 @@ func TestController_InvalidID(t *testing.T) {
 			if err := json.UnmarshalRead(rec.Body, &got); err != nil {
 				t.Fatalf("decode body: %v", err)
 			}
-			if got.Code != http.StatusBadRequest || got.Message == "" {
-				t.Errorf("HTTPError = %+v, want code %d and a message", got, http.StatusBadRequest)
+			// no error code: the status (400 without one) is what tells it apart from title_invalid
+			if got.Code != http.StatusBadRequest || got.Message == "" || got.ErrorCode != "" {
+				t.Errorf("HTTPError = %+v, want code %d, a message and no error code", got, http.StatusBadRequest)
 			}
 		})
 	}
 }
 
 // TestController_InvalidTitle checks that model.ErrTitleInvalid from validation maps to 400
-// with the validation message.
+// with the validation message and the title_invalid error code.
 func TestController_InvalidTitle(t *testing.T) {
 	c := api.New(failingStore{})
 
@@ -69,7 +70,7 @@ func TestController_InvalidTitle(t *testing.T) {
 			if err := json.UnmarshalRead(rec.Body, &got); err != nil {
 				t.Fatalf("decode body: %v", err)
 			}
-			want := httpx.HTTPError{Code: http.StatusBadRequest, Message: model.ErrTitleInvalid.Error()}
+			want := httpx.HTTPError{Code: http.StatusBadRequest, Message: model.ErrTitleInvalid.Error(), ErrorCode: "title_invalid"}
 			if got != want {
 				t.Errorf("HTTPError = %+v, want %+v", got, want)
 			}

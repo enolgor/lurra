@@ -42,6 +42,7 @@ func TestNewError(t *testing.T) {
 		err        error
 		wantStatus int
 		wantMsg    string
+		wantCode   string
 	}{
 		{
 			name:       "status error",
@@ -56,6 +57,13 @@ func TestNewError(t *testing.T) {
 			err:        fmt.Errorf("handler: %w", httpx.WithStatus(http.StatusBadRequest, errors.New("title is empty"))),
 			wantStatus: http.StatusBadRequest,
 			wantMsg:    "title is empty",
+		},
+		{
+			name:       "status error with an error code",
+			err:        httpx.WithErrorCode(http.StatusBadRequest, "title_invalid", errors.New("title is empty")),
+			wantStatus: http.StatusBadRequest,
+			wantMsg:    "title is empty",
+			wantCode:   "title_invalid",
 		},
 		{
 			// Errors without a status must not leak their message to the client.
@@ -83,7 +91,7 @@ func TestNewError(t *testing.T) {
 			if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
 				t.Fatalf("decode body %q: %v", rec.Body, err)
 			}
-			want := httpx.HTTPError{Code: tt.wantStatus, Message: tt.wantMsg, RequestID: "abc"}
+			want := httpx.HTTPError{Code: tt.wantStatus, Message: tt.wantMsg, RequestID: "abc", ErrorCode: tt.wantCode}
 			if body != want {
 				t.Errorf("body = %+v, want %+v", body, want)
 			}
