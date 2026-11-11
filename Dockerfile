@@ -38,7 +38,7 @@ RUN mkdir /data
 # distroless's current Debian release; pin it with static-debian13 if needed.
 FROM gcr.io/distroless/static:nonroot
 COPY --from=app /app /app
-COPY --from=app --chown=nonroot:nonroot --chmod=1777 /data /data
+COPY --from=app --chown=nonroot:nonroot /data /data
 ENV DB_PATH=/data/app.db
 VOLUME /data
 EXPOSE 8080

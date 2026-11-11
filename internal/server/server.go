@@ -35,6 +35,9 @@ func newRouter(logger *slog.Logger, c *api.Controller, dist fs.FS) http.Handler 
 		Schema:        httplog.SchemaECS.Concise(true),
 		RecoverPanics: true,
 	}))
+	// CSRF: rejects cross-origin POST/PATCH/DELETE with 403 (Sec-Fetch-Site or Origin header).
+	// After the logger, so rejections are logged.
+	r.Use(http.NewCrossOriginProtection().Handler)
 	r.Use(middleware.Compress(compressLevel))
 
 	r.Route("/api/v1", func(r chi.Router) {
