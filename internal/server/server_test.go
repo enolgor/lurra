@@ -148,6 +148,41 @@ func TestTodoLifecycle(t *testing.T) {
 	}
 }
 
+// TestCrossOriginProtection checks that other sites can't change state through the user's
+// browser (CSRF), while the SPA (same origin), non-browser clients and reads still work.
+func TestCrossOriginProtection(t *testing.T) {
+	tests := []struct {
+		name       string
+		method     string
+		headers    map[string]string
+		wantStatus int
+	}{
+		{name: "cross-site POST", method: http.MethodPost, headers: map[string]string{"Sec-Fetch-Site": "cross-site"}, wantStatus: http.StatusForbidden},
+		{name: "same-site POST", method: http.MethodPost, headers: map[string]string{"Sec-Fetch-Site": "same-site"}, wantStatus: http.StatusForbidden},
+		{name: "other Origin POST", method: http.MethodPost, headers: map[string]string{"Origin": "https://evil.example"}, wantStatus: http.StatusForbidden},
+		{name: "same-origin POST", method: http.MethodPost, headers: map[string]string{"Sec-Fetch-Site": "same-origin"}, wantStatus: http.StatusCreated},
+		{name: "matching Origin POST", method: http.MethodPost, headers: map[string]string{"Origin": "http://example.com"}, wantStatus: http.StatusCreated},
+		{name: "POST without browser headers", method: http.MethodPost, wantStatus: http.StatusCreated},
+		{name: "cross-site GET", method: http.MethodGet, headers: map[string]string{"Sec-Fetch-Site": "cross-site"}, wantStatus: http.StatusOK},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			h := newTestHandler(t)
+			// httptest requests have Host example.com
+			req := httptest.NewRequestWithContext(t.Context(), tt.method, "/api/v1/todos", strings.NewReader(`{"title":"x"}`))
+			for name, value := range tt.headers {
+				req.Header.Set(name, value)
+			}
+			rec := httptest.NewRecorder()
+			h.ServeHTTP(rec, req)
+			if rec.Code != tt.wantStatus {
+				t.Errorf("status = %d, want %d; body: %s", rec.Code, tt.wantStatus, rec.Body)
+			}
+		})
+	}
+}
+
 func TestSPA(t *testing.T) {
 	const (
 		index      = "<!doctype html>app"
