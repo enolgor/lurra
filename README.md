@@ -246,14 +246,18 @@ the Renovate app once the config is on your main branch.
 
 The todo app is there to show the patterns; replace it with your own domain:
 
-1. **Rename the module:** change `github.com/enolgor/lurra` in `go.mod` and in the imports
-   (`go mod edit -module <your/module>`, then a search and replace).
-2. **Replace the todo domain:** the types in `internal/model`, the store and a new migration in
+1. **Install [gonew](https://pkg.go.dev/golang.org/x/tools/cmd/gonew):**
+   `go install golang.org/x/tools/cmd/gonew@latest`.
+2. **Copy and rename:** `gonew github.com/enolgor/lurra <your/module>` copies the latest release
+   and renames the module in `go.mod` and the imports. It doesn't know `tools.mod`, so rename it
+   there too: `go mod edit -module <your/module> tools.mod`.
+3. **Replace the todo domain:** the types in `internal/model`, the store and a new migration in
    `internal/store/sqlite`, the handlers in `internal/api`, then `make bindings` and the pages in
    `web/src/routes`.
-3. **Change the names and texts:** the app title and footer in `web/messages/`, and the binary and
-   image name (`BIN_NAME`) in the Makefile.
-4. **Choose your license,** and replace this README.
+4. **Change the names and texts:** the app title and footer in `web/messages/`, the footer's
+   GitHub link in `web/src/App.svelte` (and its test), and the binary and image name
+   (`BIN_NAME`) in the Makefile.
+5. **Choose your license,** and replace this README.
 
 If you use Claude Code, `CLAUDE.md` holds the project's rules (layout, conventions, how to run an
 audit), so it follows the same conventions you do.
