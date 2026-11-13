@@ -238,7 +238,9 @@ your main branch. Each run's summary shows the Vitest report and Go test and cov
 `release.yml` publishes a release for every version tag ([Releases](#releases)).
 
 Renovate (`.github/renovate.json`) keeps npm and Go dependencies, the dev tools and the pinned
-GitHub Actions up to date; install the Renovate app once the config is on your main branch.
+GitHub Actions up to date: once a week, minor and patch updates come as one PR and each major as
+its own, and only versions released at least 3 days ago (security fixes skip the wait). Install
+the Renovate app once the config is on your main branch.
 
 ## Making it yours
 
