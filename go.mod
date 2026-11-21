@@ -8,11 +8,11 @@ require (
 	github.com/go-chi/httplog/v3 v3.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/ncruces/go-sqlite3 v0.37.0
-	github.com/pressly/goose/v3 v3.30.0
+	github.com/pressly/goose/v3 v3.30.1
 )
 
 require (
-	github.com/mfridman/interpolate v0.0.2 // indirect
+	github.com/mfridman/interpolate v0.2.0 // indirect
 	github.com/ncruces/go-sqlite3-wasm/v6 v6.5.35401 // indirect
 	github.com/ncruces/julianday v1.0.0 // indirect
 	github.com/sethvargo/go-retry v0.5.0 // indirect
