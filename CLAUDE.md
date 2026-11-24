@@ -79,6 +79,20 @@ swag → OpenAPI → `web/src/lib/api/schema.ts`, Svelte 5 SPA embedded in the b
 - Log with `slog.*Context(ctx, ...)` so lines carry `request_id`.
 - New Go source dirs must be added to the Dockerfile's explicit `COPY` lines.
 
+## Dependency updates
+
+When asked to check updates (usually a Renovate branch), answer first, change nothing:
+
+- List every update in the branch's commits (`go.mod`, `tools.mod`, `package-lock.json`
+  including transitive packages, pinned actions) with old → new version.
+- Read each changelog for the whole range, and run the checks for what changed.
+- Report as *needs fixing* (what breaks, with the cause found, not guessed: a formatter or
+  lint diff can be a symptom), *worth using* (new options or features that fit this project)
+  and *nothing to do* (a table, one line each). Then wait for which ones to do.
+- Work around an upstream bug as narrowly as possible (a line-level disable, not a config
+  change), with a comment linking the upstream issue or PR: `remove when <link> is released`.
+  When an update brings that fix, removing the workaround goes under *needs fixing*.
+
 ## Audits
 
 When asked for an audit, change nothing: read (never install, format or delete), then report
@@ -108,6 +122,8 @@ doesn't cover yet, with the check to add. Run `make ci` first; then check:
 - **Duplication:** any repeated code (components, helpers, test setups, config) goes under
   *should fix*, with where to extract it.
 - **Docs:** `CLAUDE.md`, `README.md` and code comments describe the code as it is now.
+- **Workarounds:** every `remove when … is released` comment; if the fix is out in the installed
+  version, it goes under *should fix* (remove it, then `make format`).
 - **Tests:** behavior is tested, not just lines; every coverage exclude and ignore comment still
   has a valid reason; no skipped tests or leftover debug output.
 - **Git:** no tracked file that should be ignored, nothing ignored that should be tracked.

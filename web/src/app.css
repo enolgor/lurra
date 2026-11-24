@@ -2,6 +2,9 @@
 @import '@fontsource-variable/inter';
 @plugin 'daisyui' {
 	logs: false; /* no banner in every format, lint and test run */
+	/* the theme is set by data-theme (theme.svelte.ts), not theme-controller inputs, and there are
+	   no modals or drawers, which are all that read the root scroll lock and gutter */
+	exclude: themecontroller, rootscrolllock, rootscrollgutter;
 }
 
 /* Inter (self-hosted by @fontsource) as the default font */

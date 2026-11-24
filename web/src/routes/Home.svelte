@@ -68,13 +68,12 @@
 	<button class="btn btn-primary" disabled={!newTitle.trim()}>{m.todo_add()}</button>
 </form>
 
-<div role="tablist" aria-label={m.filter_label()} class="tabs tabs-border mb-2">
+<div role="tablist" aria-label={m.filter_label()} class="tabs-border mb-2 tabs">
 	{#each filters as value (value)}
 		<button
 			type="button"
 			role="tab"
 			class="tab"
-			class:tab-active={value === filter}
 			aria-selected={value === filter}
 			onclick={() => setFilter(value)}
 		>
@@ -102,6 +101,7 @@
 	<ul class="list rounded-box bg-base-100">
 		{#each todos.visible as todo (todo.id)}
 			{@const busy = todos.busy.has(todo.id)}
+			<!-- eslint-disable-next-line better-tailwindcss/no-unknown-classes -- daisyUI 5.8 bug, remove when https://github.com/saadeghi/daisyui/pull/4892 is released -->
 			<li class="list-row items-center">
 				<input
 					type="checkbox"

@@ -35,7 +35,8 @@
 
 <details class="dropdown dropdown-end" bind:open bind:this={dropdown}>
 	<summary class="btn" bind:this={button}>{@render trigger()}</summary>
-	<ul class="menu dropdown-content z-10 w-52 rounded-box bg-base-100 p-2 shadow-sm">
+	<!-- eslint-disable-next-line better-tailwindcss/no-unknown-classes -- daisyUI 5.8 bug, remove when https://github.com/saadeghi/daisyui/pull/4892 is released -->
+	<ul class="dropdown-content menu z-10 w-52 rounded-box bg-base-100 p-2 shadow-sm">
 		{@render children()}
 	</ul>
 </details>
